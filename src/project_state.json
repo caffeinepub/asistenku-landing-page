@@ -1,0 +1,441 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 15,
+  "summary": "Building a landing page for Asistenku, an AI-powered managed service platform. The project includes a main landing page with hero section, service cards (Tenang, Rapi, Fokus, Jaga), and three additional placeholder pages (/tentang-partner-asistenku, /internal-portal, /partner-portal). UI-only implementation with no backend, using brand assets and teal/navy color scheme from logo.",
+  "architectural_notes": [
+    "UI-only implementation - no backend (main.mo), no authentication, no access control",
+    "Responsive design with mobile-first approach using Tailwind CSS",
+    "Color scheme derived from brand logo: teal/cyan and navy blue",
+    "Accordion interaction: only one service card expanded at a time",
+    "Smooth scroll navigation for internal page sections",
+    "Three brand assets: asistenku-horizontal.png (header), asistenku-icon.png (footer), heroimagenew.png (hero section)"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-main-landing-page-route-with-complete-layout-including-navbar-with-logo-asistenku-horizontal-png-on-left-and-navigation-links-layanan-daftar-masuk-on-right",
+      "title": "Create main landing page route (/) with complete layout including navbar with logo (asistenku-horizontal.png) on left and navigation links (Layanan, Daftar, Masuk) on right",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-hero-section-with-two-column-layout-left-column-contains-heading-kerja-tetap-berjalan-hidup-tetap-tenang-two-paragraphs-asistenku-adalah-sistem-pendampingan-dalam-pengaturan-delegasi-tugas-and-kami-menjaga-setiap-layanan-agar-tetap-berjalan-dengan-kualitas-terbaik-primary-button-pilih-layanan-scrolls-to-service-cards-and-secondary-outline-button-ngobrol-dulu-links-to-https-wa-me-628817743613-right-column-displays-hero-image-heroimagenew-png-with-rounded-rectangle-and-soft-shadow",
+      "title": "Implement Hero section with two-column layout: left column contains heading 'Kerja tetap berjalan. Hidup tetap tenang.', two paragraphs ('Asistenku adalah sistem pendampingan dalam pengaturan delegasi tugas.' and 'Kami menjaga setiap layanan agar tetap berjalan dengan kualitas terbaik.'), primary button 'Pilih Layanan' (scrolls to service cards), and secondary outline button 'Ngobrol dulu' (links to https://wa.me/628817743613); right column displays hero image (heroimagenew.png) with rounded rectangle and soft shadow",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-bagaimana-kami-mendampingi-section-with-centered-title-and-four-numbered-steps-1-sampaikan-kebutuhan-anda-2-asistenmu-menyusunnya-menjadi-brief-yang-jelas-dan-terstruktur-3-partner-yang-tepat-dipilih-dan-dikelola-4-hasil-diperiksa-sebelum-sampai-ke-anda-followed-by-closing-line-anda-tidak-lagi-mengelola-orang-dan-proses-anda-hanya-mengelola-keputusan",
+      "title": "Create 'Bagaimana Kami Mendampingi' section with centered title and four numbered steps: '1. Sampaikan kebutuhan Anda.', '2. Asistenmu menyusunnya menjadi brief yang jelas dan terstruktur.', '3. Partner yang tepat dipilih dan dikelola.', '4. Hasil diperiksa sebelum sampai ke Anda.', followed by closing line 'Anda tidak lagi mengelola orang dan proses. Anda hanya mengelola keputusan.'",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-tepat-tanpa-kehilangan-waktu-section-with-title-and-paragraph-content-kami-menjaga-ketepatan-dalam-kebutuhan-mendesak-struktur-kami-memungkinkan-pekerjaan-dijalankan-secara-paralel-tanpa-kehilangan-kontrol",
+      "title": "Create 'Tepat Tanpa Kehilangan Waktu' section with title and paragraph content: 'Kami menjaga ketepatan. Dalam kebutuhan mendesak, struktur kami memungkinkan pekerjaan dijalankan secara paralel tanpa kehilangan kontrol'",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-centered-conversion-statement-section-with-two-lines-konversi-unit-layanan-tidak-ditentukan-secara-sembarangan-and-anda-tidak-perlu-menghitung-menegosiasikan-atau-memikirkan-angka-di-level-eksekusi",
+      "title": "Create centered conversion statement section with two lines: 'Konversi unit layanan tidak ditentukan secara sembarangan.' and 'Anda tidak perlu menghitung, menegosiasikan, atau memikirkan angka di level eksekusi.'",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-service-cards-section-with-2x2-grid-layout-containing-four-accordion-cards-tenang-rapi-fokus-jaga-each-card-shows-emoji-icon-title-short-sentence-when-collapsed-and-expands-to-show-full-pricing-details-rp-amount-unit-allocation-description-paragraph-and-hubungi-concierge-kami-primary-teal-button-linking-to-https-wa-me-628817743613-only-one-accordion-can-be-open-at-a-time-with-arrow-up-down-indicator",
+      "title": "Implement service cards section with 2x2 grid layout containing four accordion cards: 🧘 TENANG, 🗂️ RAPI, 🎯 FOKUS, 🛡️ JAGA. Each card shows emoji icon, title, short sentence when collapsed, and expands to show full pricing details (Rp amount, unit allocation, description paragraph, and 'Hubungi Concierge Kami' primary teal button linking to https://wa.me/628817743613). Only one accordion can be open at a time with arrow up/down indicator",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-join-team-section-with-centered-title-ingin-jadi-bagian-dari-tim-asistenku-and-light-outline-pelajari-button-that-navigates-to-tentang-partner-asistenku",
+      "title": "Create 'Join Team' section with centered title 'Ingin jadi bagian dari Tim Asistenku?' and light/outline 'Pelajari' button that navigates to /tentang-partner-asistenku",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-closing-section-penutup-with-centered-text-kami-menjaga-setiap-layanan-agar-tetap-berjalan-dengan-kualitas-terbaik",
+      "title": "Create closing section (Penutup) with centered text: 'Kami menjaga setiap layanan agar tetap berjalan dengan kualitas terbaik.'",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-footer-with-centered-asistenku-icon-png-logo-copyright-text-asistenku-2026-pt-asistenku-digital-indonesia-and-three-links-hubungi-concierge-whatsapp-linking-to-https-wa-me-628817743613-login-internal-linking-to-internal-portal-and-partner-portal-linking-to-partner-portal-footer-should-be-clean-minimal-and-not-large-or-dark",
+      "title": "Implement footer with centered asistenku-icon.png logo, copyright text 'Asistenku © 2026 PT Asistenku Digital Indonesia', and three links: 'Hubungi Concierge (WhatsApp)' linking to https://wa.me/628817743613, 'Login Internal' linking to /internal-portal, and 'Partner Portal' linking to /partner-portal. Footer should be clean, minimal, and not large or dark",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-tentang-partner-asistenku-route-with-blank-page-containing-only-header-with-logo-and-navigation-and-footer-components",
+      "title": "Create /tentang-partner-asistenku route with blank page containing only header (with logo and navigation) and footer components",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-internal-portal-route-with-empty-page-containing-only-header-with-logo-and-navigation-and-footer-components-no-body-content",
+      "title": "Create /internal-portal route with empty page containing only header (with logo and navigation) and footer components, no body content",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-partner-portal-route-with-empty-page-containing-only-header-with-logo-and-navigation-and-footer-components-no-body-content",
+      "title": "Create /partner-portal route with empty page containing only header (with logo and navigation) and footer components, no body content",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-color-scheme-derived-from-asistenku-logo-teal-cyan-and-navy-blue-to-all-ui-components-including-buttons-accents-and-interactive-elements-ensure-responsive-mobile-first-design-with-smooth-scroll-behavior-for-navigation-interactions",
+      "title": "Apply color scheme derived from Asistenku logo (teal/cyan and navy blue) to all UI components including buttons, accents, and interactive elements. Ensure responsive mobile-first design with smooth scroll behavior for navigation interactions",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-modify-hero-section-heading-in-hero-tsx-to-display-kerja-tetap-berjalan-on-the-first-line-and-hidup-tetap-tenang-on-a-separate-line-below-it-using-explicit-line-breaks-e-g-two-separate-text-elements-or-br-tag",
+      "title": "Modify hero section heading in Hero.tsx to display 'Kerja tetap berjalan.' on the first line and 'Hidup tetap tenang.' on a separate line below it using explicit line breaks (e.g., two separate text elements or <br/> tag)",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-adjust-font-sizing-for-both-heading-lines-in-hero-tsx-so-they-appear-proportional-and-visually-balanced-while-maintaining-the-two-line-structure",
+      "title": "Adjust font sizing for both heading lines in Hero.tsx so they appear proportional and visually balanced while maintaining the two-line structure",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-build-with-love-using-caffeine-ai-attribution-text-from-footer-tsx-while-preserving-the-logo-copyright-text-and-navigation-links",
+      "title": "Remove the 'build with love using caffeine.ai' attribution text from Footer.tsx while preserving the logo, copyright text, and navigation links",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-internalportal-tsx-page-component-replacing-the-existing-empty-placeholder-at-frontend-src-pages-internalportal-tsx-with-three-main-card-sections-login-ii-top-center-dashboard-form-pendaftaran-side-by-side-on-desktop-stacked-on-mobile-and-claim-admin-superadmin-bottom-center-all-cards-should-have-white-backgrounds-soft-shadows-and-rounded-corners",
+      "title": "Create InternalPortal.tsx page component replacing the existing empty placeholder at frontend/src/pages/InternalPortal.tsx with three main card sections: Login II (top center), Dashboard + Form Pendaftaran (side-by-side on desktop, stacked on mobile), and Claim Admin/Superadmin (bottom center). All cards should have white backgrounds, soft shadows, and rounded corners.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-login-ii-card-at-the-top-center-with-title-login-internet-identity-and-a-login-ii-button-button-click-toggles-ui-state-dummy-interaction-that-enables-disables-other-buttons-on-the-page-no-actual-authentication-logic-or-api-calls",
+      "title": "Implement Login II card at the top center with title 'Login Internet Identity' and a 'Login II' button. Button click toggles UI state (dummy interaction) that enables/disables other buttons on the page. No actual authentication logic or API calls.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-dashboard-card-left-side-on-desktop-with-title-dashboard-internal-text-jika-anda-belum-memiliki-akun-internal-silakan-mendaftar-lewat-form-di-kanan-and-a-masuk-button-that-is-disabled-by-default-button-becomes-enabled-when-login-ii-state-is-active",
+      "title": "Create Dashboard card (left side on desktop) with title 'Dashboard Internal', text 'Jika Anda belum memiliki akun internal, silakan mendaftar lewat form di kanan', and a 'Masuk' button that is disabled by default. Button becomes enabled when Login II state is active.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-form-pendaftaran-card-right-side-on-desktop-with-title-form-pendaftaran-three-input-fields-nama-email-whatsapp-that-are-disabled-by-default-and-a-daftar-button-that-is-disabled-by-default-all-elements-become-enabled-when-login-ii-state-is-active",
+      "title": "Create Form Pendaftaran card (right side on desktop) with title 'Form Pendaftaran', three input fields (Nama, Email, WhatsApp) that are disabled by default, and a 'Daftar' button that is disabled by default. All elements become enabled when Login II state is active.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-claim-admin-superadmin-card-at-the-bottom-full-width-centered-with-title-claim-admin-superadmin-and-a-claim-button-that-is-disabled-by-default-button-becomes-enabled-when-login-ii-state-is-active-this-is-a-dummy-button-with-no-backend-logic",
+      "title": "Create Claim Admin/Superadmin card at the bottom (full-width/centered) with title 'Claim Admin / Superadmin' and a 'Claim' button that is disabled by default. Button becomes enabled when Login II state is active. This is a dummy button with no backend logic.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-responsive-layout-rules-desktop-layout-shows-dashboard-and-form-pendaftaran-cards-side-by-side-with-horizontal-gap-of-6-8-gap-6-or-gap-8-mobile-layout-stacks-all-cards-vertically-with-vertical-gap-of-8-10-gap-8-or-gap-10-in-order-login-ii-form-pendaftaran-dashboard-claim-admin-superadmin",
+      "title": "Apply responsive layout rules: Desktop layout shows Dashboard and Form Pendaftaran cards side-by-side with horizontal gap of 6-8 (gap-6 or gap-8). Mobile layout stacks all cards vertically with vertical gap of 8-10 (gap-8 or gap-10) in order: Login II, Form Pendaftaran, Dashboard, Claim Admin/Superadmin.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-styling-constraints-each-card-has-max-width-of-600-700px-parent-container-has-max-width-of-1100-1200px-primary-buttons-are-black-with-pill-radius-disabled-buttons-show-50-opacity-input-fields-have-soft-borders-comfortable-padding-and-placeholder-text",
+      "title": "Apply styling constraints: Each card has max-width of 600-700px, parent container has max-width of 1100-1200px. Primary buttons are black with pill-radius. Disabled buttons show 50% opacity. Input fields have soft borders, comfortable padding, and placeholder text.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-all-text-content-matches-specification-exactly-without-modification-login-internet-identity-dashboard-internal-jika-anda-belum-memiliki-akun-internal-silakan-mendaftar-lewat-form-di-kanan-masuk-form-pendaftaran-nama-email-whatsapp-daftar-claim-admin-superadmin-claim",
+      "title": "Ensure all text content matches specification exactly without modification: 'Login Internet Identity', 'Dashboard Internal', 'Jika Anda belum memiliki akun internal, silakan mendaftar lewat form di kanan', 'Masuk', 'Form Pendaftaran', 'Nama', 'Email', 'WhatsApp', 'Daftar', 'Claim Admin / Superadmin', 'Claim'.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-modify-internalportal-tsx-layout-so-dashboard-card-left-and-form-pendaftaran-card-right-are-positioned-side-by-side-with-equal-column-widths-on-desktop-while-maintaining-the-existing-vertical-stack-order-on-mobile-login-ii-form-pendaftaran-dashboard-claim-admin-superadmin",
+      "title": "Modify InternalPortal.tsx layout so Dashboard card (left) and Form Pendaftaran card (right) are positioned side-by-side with equal column widths on desktop, while maintaining the existing vertical stack order on mobile (Login II, Form Pendaftaran, Dashboard, Claim Admin/Superadmin)",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-partnerportal-tsx-page-component-at-frontend-src-pages-partnerportal-tsx-replacing-the-existing-empty-placeholder-with-three-main-card-sections-login-ii-top-center-dashboard-partner-form-pendaftaran-partner-side-by-side-on-desktop-stacked-on-mobile-use-the-same-layout-structure-spacing-and-styling-as-internalportal-tsx-all-cards-should-have-white-backgrounds-soft-shadows-and-rounded-corners",
+      "title": "Create PartnerPortal.tsx page component at frontend/src/pages/PartnerPortal.tsx replacing the existing empty placeholder with three main card sections: Login II (top center), Dashboard Partner + Form Pendaftaran Partner (side-by-side on desktop, stacked on mobile). Use the same layout structure, spacing, and styling as InternalPortal.tsx. All cards should have white backgrounds, soft shadows, and rounded corners.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-login-ii-card-at-the-top-center-of-partnerportal-tsx-with-title-login-internet-identity-and-a-login-ii-button-button-click-toggles-ui-state-dummy-interaction-that-enables-disables-the-masuk-and-daftar-buttons-below-no-actual-authentication-logic-or-api-calls",
+      "title": "Implement Login II card at the top center of PartnerPortal.tsx with title 'Login Internet Identity' and a 'Login II' button. Button click toggles UI state (dummy interaction) that enables/disables the 'Masuk' and 'Daftar' buttons below. No actual authentication logic or API calls.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-dashboard-partner-card-positioned-on-the-left-side-on-desktop-with-title-dashboard-partner-text-jika-anda-belum-memiliki-akun-partner-silakan-mendaftar-lewat-form-di-kanan-and-a-masuk-button-that-is-disabled-by-default-button-becomes-enabled-when-login-ii-state-is-active-button-is-dummy-with-no-backend-logic",
+      "title": "Create Dashboard Partner card positioned on the left side on desktop with title 'Dashboard Partner', text 'Jika Anda belum memiliki akun partner, silakan mendaftar lewat form di kanan', and a 'Masuk' button that is disabled by default. Button becomes enabled when Login II state is active. Button is dummy with no backend logic.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-form-pendaftaran-partner-card-positioned-on-the-right-side-on-desktop-with-title-form-pendaftaran-partner-four-input-fields-nama-email-whatsapp-kota-domisili-that-are-disabled-by-default-and-a-daftar-button-that-is-disabled-by-default-all-elements-become-enabled-when-login-ii-state-is-active-button-is-dummy-with-no-backend-logic",
+      "title": "Create Form Pendaftaran Partner card positioned on the right side on desktop with title 'Form Pendaftaran Partner', four input fields (Nama, Email, WhatsApp, Kota Domisili) that are disabled by default, and a 'Daftar' button that is disabled by default. All elements become enabled when Login II state is active. Button is dummy with no backend logic.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-responsive-layout-rules-to-partnerportal-tsx-desktop-layout-shows-dashboard-partner-and-form-pendaftaran-partner-cards-side-by-side-with-equal-column-widths-and-horizontal-gap-of-6-8-gap-6-or-gap-8-mobile-layout-stacks-all-cards-vertically-with-vertical-gap-of-8-10-gap-8-or-gap-10-in-this-exact-order-login-ii-form-pendaftaran-partner-dashboard-partner",
+      "title": "Apply responsive layout rules to PartnerPortal.tsx: Desktop layout shows Dashboard Partner and Form Pendaftaran Partner cards side-by-side with equal column widths and horizontal gap of 6-8 (gap-6 or gap-8). Mobile layout stacks all cards vertically with vertical gap of 8-10 (gap-8 or gap-10) in this exact order: Login II, Form Pendaftaran Partner, Dashboard Partner.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-styling-constraints-to-partnerportal-tsx-primary-buttons-are-black-with-pill-radius-disabled-buttons-show-50-opacity-input-fields-have-soft-borders-comfortable-padding-and-placeholder-text-use-the-same-visual-styling-as-internalportal-tsx-for-consistency",
+      "title": "Apply styling constraints to PartnerPortal.tsx: Primary buttons are black with pill-radius. Disabled buttons show 50% opacity. Input fields have soft borders, comfortable padding, and placeholder text. Use the same visual styling as InternalPortal.tsx for consistency.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-new-route-client-register-in-frontend-src-app-tsx-and-corresponding-page-component-at-frontend-src-pages-clientregister-tsx",
+      "title": "Create new route /client-register in frontend/src/App.tsx and corresponding page component at frontend/src/pages/ClientRegister.tsx",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-header-tsx-to-route-the-daftar-navigation-link-to-client-register-instead-of-its-current-target",
+      "title": "Update Header.tsx to route the 'Daftar' navigation link to /client-register instead of its current target",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-centered-card-layout-in-clientregister-tsx-with-white-background-soft-shadow-rounded-corners-max-width-600-700px-and-comfortable-padding",
+      "title": "Implement centered card layout in ClientRegister.tsx with white background, soft shadow, rounded corners, max-width 600-700px, and comfortable padding",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-card-title-form-pendaftaran-client-at-the-top-of-the-clientregister-card",
+      "title": "Add card title 'Form Pendaftaran Client' at the top of the ClientRegister card",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-four-form-input-fields-in-clientregister-tsx-nama-required-email-required-whatsapp-required-and-company-optional-all-inputs-must-be-disabled-by-default-with-soft-borders-comfortable-padding-and-placeholder-text",
+      "title": "Create four form input fields in ClientRegister.tsx: Nama (required), Email (required), WhatsApp (required), and Company (optional). All inputs must be disabled by default with soft borders, comfortable padding, and placeholder text",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-submit-button-below-the-form-fields-with-primary-black-styling-pill-radius-and-disabled-state-by-default-50-opacity-when-disabled",
+      "title": "Add Submit button below the form fields with primary black styling, pill-radius, and disabled state by default (50% opacity when disabled)",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-login-internet-identity-button-below-the-submit-button-with-secondary-styling-and-full-width-button-label-must-be-exactly-login-internet-identity-login-ii",
+      "title": "Add Login Internet Identity button below the Submit button with secondary styling and full width. Button label must be exactly 'Login Internet Identity (Login II)'",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-dummy-ui-state-toggle-in-clientregister-tsx-clicking-login-ii-button-toggles-a-local-state-that-enables-disables-the-submit-button-and-all-input-fields-no-authentication-logic-api-calls-or-backend-integration",
+      "title": "Implement dummy UI state toggle in ClientRegister.tsx: clicking Login II button toggles a local state that enables/disables the Submit button and all input fields. No authentication logic, API calls, or backend integration",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-responsive-mobile-first-layout-to-clientregister-tsx-ensure-card-is-centered-maintains-comfortable-padding-on-mobile-screens-and-adapts-width-appropriately-across-screen-sizes",
+      "title": "Apply responsive mobile-first layout to ClientRegister.tsx: ensure card is centered, maintains comfortable padding on mobile screens, and adapts width appropriately across screen sizes",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-all-text-content-in-clientregister-tsx-matches-specification-exactly-form-pendaftaran-client-nama-email-whatsapp-company-submit-login-internet-identity-login-ii",
+      "title": "Ensure all text content in ClientRegister.tsx matches specification exactly: 'Form Pendaftaran Client', 'Nama', 'Email', 'WhatsApp', 'Company', 'Submit', 'Login Internet Identity (Login II)'",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Main landing page with hero, service sections, accordion cards, and footer",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Create /tentang-partner-asistenku blank page with header and footer",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Create /internal-portal empty page with header and footer",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Create /partner-portal empty page with header and footer",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Place uploaded images as static assets: asistenku-horizontal.png (header logo), asistenku-icon.png (footer logo), and heroimagenew.png (hero section) in frontend/public/assets/ directory",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Update hero section to 2-column layout: text content on left, heroimagenew.png on right, adjust text sizing proportionally",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Remove 'build with love using caffeine.ai' attribution text from footer",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Modify Hero.tsx to implement a two-column responsive layout with the hero text content (heading, paragraphs, and buttons) in the left column and the heroimagenew.png image in the right column",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Adjust text sizing in the hero section's left column to be proportional and visually balanced within the two-column layout",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Build /internal-portal page with UI-only layout: Login II card (top center), Dashboard + Form Pendaftaran cards (side-by-side desktop / stacked mobile), and Claim Admin/Superadmin card (bottom center). All interactions are dummy (no backend, no API calls). Login II button toggles state to enable other buttons. Responsive mobile-first design with white cards, soft shadows, rounded corners, and primary black buttons with pill-radius.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Modify Internal Portal layout: keep Login II card at top unchanged, place Dashboard card (left) and Form Pendaftaran card (right) side-by-side with equal column widths on desktop, keep Claim Admin/Superadmin card centered at bottom, maintain vertical stack on mobile",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Build /partner-portal page with UI-only layout: Login II card (top center), Dashboard Partner + Form Pendaftaran Partner cards (side-by-side desktop / stacked mobile). All interactions are dummy (no backend, no API calls). Login II button toggles state to enable other buttons. Responsive mobile-first design with white cards, soft shadows, rounded corners, and primary black buttons with pill-radius. Form has 4 fields: Nama, Email, WhatsApp, Kota Domisili.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Build /client-register page with UI-only layout: centered card with Form Pendaftaran Client (4 fields: Nama, Email, WhatsApp, Company optional), Submit button disabled by default, Login II button below Submit to toggle UI state (dummy interaction), all inputs disabled by default and activated only after Login II click, responsive mobile-first design with white card, shadow, rounded corners, max-width 600-700px, primary black Submit button with pill-radius, secondary full-width Login II button. No backend, no API calls.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Update Header.tsx: route 'Daftar' navigation link to /client-register instead of current target",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Asistenku Landing Page",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

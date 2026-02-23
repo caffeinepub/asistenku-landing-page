@@ -1,0 +1,21 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, defining routes for home, tentang-partner, internal-portal, partner-portal, and client-register pages with shared Header/Footer layout.",
+  "frontend/src/components/Header.tsx": "Sticky header component with Asistenku logo, desktop/mobile navigation menu, smooth scroll functionality for the Layanan link, and Daftar link routing to /client-register.",
+  "frontend/src/components/Footer.tsx": "Clean minimal footer with centered Asistenku icon, copyright text, and navigation links (Concierge WhatsApp, Login Internal, Partner Portal) without Caffeine.ai attribution.",
+  "frontend/src/components/Hero.tsx": "Hero section with two-column layout featuring a two-line heading (\"Kerja tetap berjalan.\" and \"Hidup tetap tenang.\" on separate lines), description paragraphs, CTA buttons (Pilih Layanan with smooth scroll, Ngobrol dulu WhatsApp link), and hero image.",
+  "frontend/src/components/HowWeSupport.tsx": "Centered section displaying the four-step process of how Asistenku supports clients with numbered steps and closing statement.",
+  "frontend/src/components/TimelyDelivery.tsx": "Simple centered section with title and paragraph explaining Asistenku's timely delivery approach and parallel work structure.",
+  "frontend/src/components/ConversionStatement.tsx": "Centered conversion statement section with two lines emphasizing the service unit conversion approach.",
+  "frontend/src/components/ServiceCards.tsx": "2x2 grid of accordion service cards (Tenang, Rapi, Fokus, Jaga) with emoji icons, pricing details, descriptions, and WhatsApp CTA buttons using shadcn Accordion component.",
+  "frontend/src/components/JoinTeam.tsx": "Centered section inviting users to join the Asistenku team with a \"Pelajari\" button linking to the partner page.",
+  "frontend/src/components/Closing.tsx": "Simple centered closing section with final statement about service quality.",
+  "frontend/src/pages/Home.tsx": "Home page component composing all landing page sections in order: Hero, HowWeSupport, TimelyDelivery, ConversionStatement, ServiceCards, JoinTeam, and Closing.",
+  "frontend/src/pages/TentangPartner.tsx": "Blank placeholder page for partner information with minimal container structure.",
+  "frontend/src/pages/InternalPortal.tsx": "UI-only internal portal page with three card sections (Login II at top center, Dashboard and Form Pendaftaran side-by-side with equal widths on desktop, Claim Admin/Superadmin at bottom center) featuring dummy state management where Login II button toggles enabled/disabled state of other buttons and form inputs, fully responsive with mobile-first stacking layout.",
+  "frontend/src/pages/PartnerPortal.tsx": "UI-only partner portal page with three card sections (Login II at top center, Dashboard Partner and Form Pendaftaran Partner side-by-side with equal widths on desktop) featuring dummy state management where Login II button toggles enabled/disabled state of other buttons and form inputs (including 4 fields: Nama, Email, WhatsApp, Kota Domisili), fully responsive with mobile-first stacking layout (Login II → Form Pendaftaran → Dashboard).",
+  "frontend/src/utils/smoothScroll.ts": "Utility function for smooth scrolling to elements by ID, used for navigation interactions.",
+  "frontend/src/index.css": "Global styles with OKLCH color system including custom Asistenku brand colors (teal and navy) for both light and dark modes, plus smooth scroll behavior.",
+  "frontend/tailwind.config.js": "Tailwind configuration extended with Asistenku brand colors (teal and navy) as custom color tokens for consistent theming.",
+  "frontend/src/hooks/useQueries.ts": "Empty placeholder file for future backend query hooks (not needed for UI-only landing page).",
+  "frontend/src/pages/ClientRegister.tsx": "UI-only client registration page with centered card (max-width 650px) containing Form Pendaftaran Client with four input fields (Nama, Email, WhatsApp, Company optional), Submit button (disabled by default), and Login II button that toggles dummy UI state to enable/disable all inputs and Submit button, fully responsive mobile-first layout."
+}

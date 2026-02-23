@@ -1,0 +1,190 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Create Client Registration Page with UI-Only Form",
+  "requirements": [
+    {
+      "id": "REQ-35",
+      "summary": "Create new route /client-register and corresponding page component ClientRegister.tsx",
+      "acceptanceCriteria": [
+        "Route /client-register is registered in App.tsx router configuration",
+        "ClientRegister.tsx component file exists at frontend/src/pages/ClientRegister.tsx",
+        "Page is accessible via navigation to /client-register"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add new route configuration for /client-register that renders the ClientRegister page component. Follow the existing TanStack Router pattern used for routes like /internal-portal and /partner-portal, ensuring the route is wrapped in the same layout with Header and Footer components."
+        },
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "create",
+          "description": "Create new ClientRegister page component that will serve as the container for the client registration form. Initialize with basic React component structure returning a div wrapper, ready to receive form UI elements in subsequent requirements."
+        }
+      ]
+    },
+    {
+      "id": "REQ-36",
+      "summary": "Update Header navigation to route 'Daftar' link to /client-register",
+      "acceptanceCriteria": [
+        "Daftar link in Header.tsx navigates to /client-register",
+        "Navigation works correctly on both desktop and mobile views",
+        "Link maintains existing styling and behavior"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Update the 'Daftar' navigation link to route to /client-register instead of its current target. Maintain existing Link component structure and styling for both desktop and mobile menu versions. Ensure the link remains accessible in the mobile hamburger menu."
+        }
+      ]
+    },
+    {
+      "id": "REQ-37",
+      "summary": "Implement centered card layout with white background, shadow, rounded corners, and 600-700px max-width",
+      "acceptanceCriteria": [
+        "Card is horizontally centered on the page",
+        "Card has white background with soft drop shadow",
+        "Card has rounded corners matching site design system",
+        "Card max-width is between 600-700px",
+        "Card has comfortable internal padding"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Add centered card container with flex centering wrapper. Apply white background (bg-white), soft shadow (shadow-md or shadow-lg), rounded corners using Tailwind border-radius tokens from tailwind.config.js, max-width of 650px (between 600-700px), and comfortable padding (p-6 or p-8). Ensure the outer wrapper uses min-h-screen to center the card vertically."
+        }
+      ]
+    },
+    {
+      "id": "REQ-38",
+      "summary": "Add card title 'Form Pendaftaran Client' at top of card",
+      "acceptanceCriteria": [
+        "Title displays exactly as 'Form Pendaftaran Client'",
+        "Title uses appropriate heading typography",
+        "Title is positioned at the top of the card"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Add h2 or h3 heading element at the top of the card with exact text 'Form Pendaftaran Client'. Use appropriate text size (text-2xl or text-3xl) and font weight (font-bold or font-semibold) consistent with other portal pages. Add bottom margin (mb-6) to separate from form fields below."
+        }
+      ]
+    },
+    {
+      "id": "REQ-39",
+      "summary": "Create four form input fields (Nama, Email, WhatsApp, Company) with disabled state, soft borders, padding, and placeholders",
+      "acceptanceCriteria": [
+        "Four input fields are rendered: Nama, Email, WhatsApp, Company",
+        "All inputs have disabled attribute set to true by default",
+        "All inputs have soft borders and comfortable padding",
+        "All inputs display appropriate placeholder text",
+        "Company field is visually indicated as optional"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Add four labeled input fields: Nama (required), Email (required), WhatsApp (required), and Company (optional). Use label elements with appropriate spacing. Apply disabled attribute to all inputs by default, soft border styling (border border-gray-300), comfortable padding (px-4 py-2 or p-3), and appropriate placeholder text for each field. Add '(opsional)' indicator to Company label. Stack fields vertically with consistent spacing (space-y-4 or mb-4 between fields)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "summary": "Add Submit button with primary black styling, pill-radius, and disabled state with 50% opacity",
+      "acceptanceCriteria": [
+        "Submit button is rendered below form fields",
+        "Button text is exactly 'Submit'",
+        "Button has primary black background color",
+        "Button has pill-radius (fully rounded corners)",
+        "Button is disabled by default",
+        "Disabled state shows 50% opacity"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Add Submit button below form fields with exact text 'Submit'. Apply primary black background (bg-black), white text (text-white), pill-radius (rounded-full), appropriate padding (px-6 py-3), disabled attribute set to true by default, and 50% opacity when disabled (disabled:opacity-50). Add top margin (mt-6) to separate from form fields."
+        }
+      ]
+    },
+    {
+      "id": "REQ-41",
+      "summary": "Add Login Internet Identity button below Submit button with secondary styling and full width",
+      "acceptanceCriteria": [
+        "Login II button is positioned below Submit button with appropriate spacing",
+        "Button text is exactly 'Login Internet Identity (Login II)'",
+        "Button has secondary styling (not primary black)",
+        "Button spans full width of the card",
+        "Button is enabled by default (not disabled)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Add Login Internet Identity button below Submit button with exact text 'Login Internet Identity (Login II)'. Apply secondary styling using border with primary color (border border-black or border-primary), transparent or white background, black text, full width (w-full), appropriate padding (px-6 py-3), and rounded corners. Add top margin (mt-4) to separate from Submit button. Button should be enabled by default (no disabled attribute)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-42",
+      "summary": "Implement dummy UI state toggle that enables/disables inputs and Submit button when Login II is clicked",
+      "acceptanceCriteria": [
+        "Local React state tracks login status (default: false)",
+        "Clicking Login II button toggles login status",
+        "When logged in, all input fields become enabled",
+        "When logged in, Submit button becomes enabled",
+        "When logged out, all inputs and Submit button are disabled",
+        "No API calls or authentication logic is executed",
+        "No backend integration or real authentication"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Add React useState hook to track dummy login state (default: false). Wire Login II button onClick handler to toggle this state. Bind the disabled attribute of all four input fields and the Submit button to the inverse of the login state (disabled={!isLoggedIn}). Do not implement any authentication logic, API calls, or backend integration—this is purely UI state management for demonstration purposes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "summary": "Apply responsive mobile-first layout ensuring card centering, comfortable padding, and adaptive width across screen sizes",
+      "acceptanceCriteria": [
+        "Layout works correctly on mobile screens (320px+)",
+        "Card maintains comfortable padding on all screen sizes",
+        "Card is horizontally centered on desktop and tablet",
+        "All form elements stack vertically with appropriate spacing",
+        "No horizontal scrolling on mobile devices",
+        "Touch targets meet minimum size requirements on mobile"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Apply mobile-first responsive design using Tailwind responsive utilities. Use padding utilities (px-4 sm:px-6) on outer wrapper to prevent edge-to-edge layout on mobile. Ensure card container uses responsive width (w-full with max-w-2xl or max-w-[650px]) and horizontal centering (mx-auto). Verify all form elements stack vertically with consistent spacing. Ensure button touch targets are appropriately sized (min-h-[44px] or py-3) for mobile interaction."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Ensure all text content matches specification exactly without modifications",
+      "acceptanceCriteria": [
+        "Card title is exactly 'Form Pendaftaran Client'",
+        "Input labels match exactly: 'Nama', 'Email', 'WhatsApp', 'Company'",
+        "Submit button text is exactly 'Submit'",
+        "Login II button text is exactly 'Login Internet Identity (Login II)'",
+        "No text modifications or translations"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Verify and finalize all text content to match specification exactly: card title 'Form Pendaftaran Client', input labels 'Nama', 'Email', 'WhatsApp', 'Company' (with Company marked as opsional), Submit button 'Submit', and Login II button 'Login Internet Identity (Login II)'. Review the component to ensure no text has been modified or translated from the specified values."
+        }
+      ]
+    }
+  ]
+}

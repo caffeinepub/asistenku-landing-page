@@ -1,0 +1,140 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-23T19:33:20.570Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 10,
+    "implemented": 10,
+    "items": [
+      {
+        "id": "REQ-35",
+        "summary": "Create new route /client-register in frontend/src/App.tsx and corresponding page component at frontend/src/pages/ClientRegister.tsx",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-36",
+        "summary": "Update Header.tsx to route the 'Daftar' navigation link to /client-register instead of its current target",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Header.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Header.tsx"
+        ]
+      },
+      {
+        "id": "REQ-37",
+        "summary": "Implement centered card layout in ClientRegister.tsx with white background, soft shadow, rounded corners, max-width 600-700px, and comfortable padding",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-38",
+        "summary": "Add card title 'Form Pendaftaran Client' at the top of the ClientRegister card",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-39",
+        "summary": "Create four form input fields in ClientRegister.tsx: Nama (required), Email (required), WhatsApp (required), and Company (optional). All inputs must be disabled by default with soft borders, comfortable padding, and placeholder text",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-40",
+        "summary": "Add Submit button below the form fields with primary black styling, pill-radius, and disabled state by default (50% opacity when disabled)",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-41",
+        "summary": "Add Login Internet Identity button below the Submit button with secondary styling and full width. Button label must be exactly 'Login Internet Identity (Login II)'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-42",
+        "summary": "Implement dummy UI state toggle in ClientRegister.tsx: clicking Login II button toggles a local state that enables/disables the Submit button and all input fields. No authentication logic, API calls, or backend integration",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-43",
+        "summary": "Apply responsive mobile-first layout to ClientRegister.tsx: ensure card is centered, maintains comfortable padding on mobile screens, and adapts width appropriately across screen sizes",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      },
+      {
+        "id": "REQ-44",
+        "summary": "Ensure all text content in ClientRegister.tsx matches specification exactly: 'Form Pendaftaran Client', 'Nama', 'Email', 'WhatsApp', 'Company', 'Submit', 'Login Internet Identity (Login II)'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/ClientRegister.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/pages/ClientRegister.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

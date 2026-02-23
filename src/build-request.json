@@ -1,0 +1,240 @@
+{
+  "kind": "build_request",
+  "title": "Create Client Registration Page with UI-Only Form",
+  "projectName": "Asistenku Platform",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-35",
+      "text": "Create new route /client-register in frontend/src/App.tsx and corresponding page component at frontend/src/pages/ClientRegister.tsx",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "BUILD CLIENT REGISTER PAGE — UI ONLY",
+          "Buat halaman /client-register yang **UI-only**"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Route /client-register is registered in App.tsx router configuration",
+        "ClientRegister.tsx component file exists at frontend/src/pages/ClientRegister.tsx",
+        "Page is accessible via navigation to /client-register"
+      ]
+    },
+    {
+      "id": "REQ-36",
+      "text": "Update Header.tsx to route the 'Daftar' navigation link to /client-register instead of its current target",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Link \"Daftar\" → routing ke `/client-register`"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Daftar link in Header.tsx navigates to /client-register",
+        "Navigation works correctly on both desktop and mobile views",
+        "Link maintains existing styling and behavior"
+      ]
+    },
+    {
+      "id": "REQ-37",
+      "text": "Implement centered card layout in ClientRegister.tsx with white background, soft shadow, rounded corners, max-width 600-700px, and comfortable padding",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Card di tengah halaman",
+          "Card style: white background, shadow, rounded corners",
+          "Card max-width 600–700px, centered"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Card is horizontally centered on the page",
+        "Card has white background with soft drop shadow",
+        "Card has rounded corners matching site design system",
+        "Card max-width is between 600-700px",
+        "Card has comfortable internal padding"
+      ]
+    },
+    {
+      "id": "REQ-38",
+      "text": "Add card title 'Form Pendaftaran Client' at the top of the ClientRegister card",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Title: \"Form Pendaftaran Client\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "Title displays exactly as 'Form Pendaftaran Client'",
+        "Title uses appropriate heading typography",
+        "Title is positioned at the top of the card"
+      ]
+    },
+    {
+      "id": "REQ-39",
+      "text": "Create four form input fields in ClientRegister.tsx: Nama (required), Email (required), WhatsApp (required), and Company (optional). All inputs must be disabled by default with soft borders, comfortable padding, and placeholder text",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Fields: - Nama - Email - WhatsApp - Company (opsional)",
+          "Semua input disabled default → aktif hanya setelah dummy Login II",
+          "Inputs: border soft, padding nyaman, placeholder text"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Four input fields are rendered: Nama, Email, WhatsApp, Company",
+        "All inputs have disabled attribute set to true by default",
+        "All inputs have soft borders and comfortable padding",
+        "All inputs display appropriate placeholder text",
+        "Company field is visually indicated as optional"
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "text": "Add Submit button below the form fields with primary black styling, pill-radius, and disabled state by default (50% opacity when disabled)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Tombol: \"Submit\" (disabled default, dummy)",
+          "Button: Submit = primary black, pill-radius, disabled state opacity 50%"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Submit button is rendered below form fields",
+        "Button text is exactly 'Submit'",
+        "Button has primary black background color",
+        "Button has pill-radius (fully rounded corners)",
+        "Button is disabled by default",
+        "Disabled state shows 50% opacity"
+      ]
+    },
+    {
+      "id": "REQ-41",
+      "text": "Add Login Internet Identity button below the Submit button with secondary styling and full width. Button label must be exactly 'Login Internet Identity (Login II)'",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "**Login II button** terpisah **di bawah tombol Submit**",
+          "Label: \"Login Internet Identity (Login II)\"",
+          "Button: Login II = secondary style, full width"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Login II button is positioned below Submit button with appropriate spacing",
+        "Button text is exactly 'Login Internet Identity (Login II)'",
+        "Button has secondary styling (not primary black)",
+        "Button spans full width of the card",
+        "Button is enabled by default (not disabled)"
+      ]
+    },
+    {
+      "id": "REQ-42",
+      "text": "Implement dummy UI state toggle in ClientRegister.tsx: clicking Login II button toggles a local state that enables/disables the Submit button and all input fields. No authentication logic, API calls, or backend integration",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Klik → dummy UI aktifkan tombol Submit",
+          "Tombol Login II hanya toggle UI state, tidak ada backend",
+          "Tidak ada API call",
+          "Semua input disabled default → aktif hanya setelah dummy Login II"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Local React state tracks login status (default: false)",
+        "Clicking Login II button toggles login status",
+        "When logged in, all input fields become enabled",
+        "When logged in, Submit button becomes enabled",
+        "When logged out, all inputs and Submit button are disabled",
+        "No API calls or authentication logic is executed",
+        "No backend integration or real authentication"
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "text": "Apply responsive mobile-first layout to ClientRegister.tsx: ensure card is centered, maintains comfortable padding on mobile screens, and adapts width appropriately across screen sizes",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Halaman harus **responsive mobile-first**",
+          "Responsive: mobile stacked, desktop center",
+          "Mobile-first, responsive, UI aman"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Layout works correctly on mobile screens (320px+)",
+        "Card maintains comfortable padding on all screen sizes",
+        "Card is horizontally centered on desktop and tablet",
+        "All form elements stack vertically with appropriate spacing",
+        "No horizontal scrolling on mobile devices",
+        "Touch targets meet minimum size requirements on mobile"
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "Ensure all text content in ClientRegister.tsx matches specification exactly: 'Form Pendaftaran Client', 'Nama', 'Email', 'WhatsApp', 'Company', 'Submit', 'Login Internet Identity (Login II)'",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-build-request"
+        ],
+        "quotes": [
+          "Semua teks persis seperti di spec, jangan ubah"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Card title is exactly 'Form Pendaftaran Client'",
+        "Input labels match exactly: 'Nama', 'Email', 'WhatsApp', 'Company'",
+        "Submit button text is exactly 'Submit'",
+        "Login II button text is exactly 'Login Internet Identity (Login II)'",
+        "No text modifications or translations"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useActor.ts",
+    "Do not implement real authentication or backend integration",
+    "Do not create any backend logic or API endpoints",
+    "All interactions must be UI-only dummy state management",
+    "Maintain consistency with existing InternalPortal.tsx and PartnerPortal.tsx styling patterns"
+  ],
+  "nonGoals": [
+    "Real Internet Identity authentication",
+    "Backend API integration",
+    "Form validation logic",
+    "Data persistence",
+    "Success/error messages",
+    "Role-based access control",
+    "Email verification",
+    "WhatsApp integration"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
