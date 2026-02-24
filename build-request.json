@@ -1,0 +1,77 @@
+{
+  "kind": "build_request",
+  "title": "Add role-based rendering logic to /dashboard/internal",
+  "projectName": "Asistenku Internal",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Update `frontend/src/pages/dashboard/internal.tsx` to implement role-based rendering: if the current role is 'Admin' or 'Superadmin' (isSuperAdmin), render dashboards for ALL roles in a toggleable accordion (one accordion per role, toggled via `toggleRoleAccordion`); otherwise, only render the dashboard section for the currently logged-in role.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "const isSuperAdmin = role === \"Admin\" || role === \"Superadmin\";\n  const rolesToRender = isSuperAdmin ? roles : [role];"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When role is 'Admin' or 'Superadmin', all roles are rendered as separate accordion sections",
+        "Each accordion section header shows the role name (e.g., 'AdminUser Dashboard') and is clickable to toggle open/closed via toggleRoleAccordion",
+        "When role is neither 'Admin' nor 'Superadmin', only the section for that specific role is rendered (no accordion toggle header shown)",
+        "Role accordion state is managed with an openRoles map per role key"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Within each role section in `frontend/src/pages/dashboard/internal.tsx`, render three sub-sections: (1) a grid of Summary Cards via `renderSummaryCards(r)`, (2) a Middle Section ('Details / List Section') toggled by clicking via `toggleSection(r, 'middle')` and conditionally rendering `renderMiddleSection(r)`, and (3) a Bottom Section ('History / Tickets Section') toggled by clicking via `toggleSection(r, 'bottom')` and conditionally rendering `renderBottomSection(r)`.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "{/* Summary Cards */}\n              <section className=\"grid gap-4 md:grid-cols-4\">\n                {renderSummaryCards(r)}\n              </section>",
+          "{/* Middle Section */}\n              <section\n                className=\"bg-white shadow rounded p-4 cursor-pointer\"\n                onClick={() => toggleSection(r,\"middle\")}\n              >",
+          "{/* Bottom Section */}\n              <section\n                className=\"bg-white shadow rounded p-4 cursor-pointer\"\n                onClick={() => toggleSection(r,\"bottom\")}\n              >"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Summary Cards section renders a 4-column grid (md:grid-cols-4) for each role using renderSummaryCards(r)",
+        "Middle Section is visible and clickable; clicking toggles sections[r].middle; content renders only when sections[r].middle is true",
+        "Bottom Section is visible and clickable; clicking toggles sections[r].bottom; content renders only when sections[r].bottom is true",
+        "Both Middle and Bottom sections use 'bg-white shadow rounded p-4 cursor-pointer' styling",
+        "Section toggle state is managed per role in a sections map keyed by role name"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Ensure the `frontend/src/App.tsx` route for `/dashboard/internal` passes a valid role prop (e.g., 'Admin' or 'Superadmin') to `InternalDashboard` so that the admin accordion view can be tested end-to-end.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The /dashboard/internal route renders InternalDashboard with a role that covers the admin/superadmin case for visual testing",
+        "Changing the role prop to a non-admin value (e.g., 'Concierge') should render only that role's dashboard section"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/src/hooks/ or frontend/src/components/ui/",
+    "Keep all dashboard logic within frontend/src/pages/dashboard/internal.tsx",
+    "Backend (backend/main.mo) should not be changed — this is a frontend-only update"
+  ],
+  "nonGoals": [
+    "Connecting the dashboard to live backend/canister data",
+    "Implementing real authentication or role resolution from Internet Identity",
+    "Adding new roles beyond the existing four (AdminUser, AdminFinance, Asistenmu, Concierge)"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

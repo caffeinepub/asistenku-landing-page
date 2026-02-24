@@ -1,0 +1,57 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add role-based rendering logic to /dashboard/internal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Implement role-based accordion rendering: Admin/Superadmin sees all roles in toggleable accordions, other roles see only their own dashboard section",
+      "acceptanceCriteria": [
+        "When role is 'Admin' or 'Superadmin', all roles are rendered as separate accordion sections",
+        "Each accordion section header shows the role name (e.g., 'AdminUser Dashboard') and is clickable to toggle open/closed via toggleRoleAccordion",
+        "When role is neither 'Admin' nor 'Superadmin', only the section for that specific role is rendered (no accordion toggle header shown)",
+        "Role accordion state is managed with an openRoles map per role key"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/dashboard/internal.tsx",
+          "operation": "modify",
+          "description": "Add isSuperAdmin boolean computed from role ('Admin' or 'Superadmin'). Create rolesToRender array that contains all four roles if isSuperAdmin, otherwise contains only the current role. Add openRoles state map to track which role accordions are open. Implement toggleRoleAccordion function to toggle openRoles[role]. Update render logic to map over rolesToRender: for each role, if isSuperAdmin render an accordion header with the role name and chevron icon that calls toggleRoleAccordion on click, conditionally showing/hiding the role's dashboard content based on openRoles[role]; if not isSuperAdmin, render the role section directly without accordion wrapper."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Render three sub-sections per role: Summary Cards grid, toggleable Middle Section, and toggleable Bottom Section with per-role state management",
+      "acceptanceCriteria": [
+        "Summary Cards section renders a 4-column grid (md:grid-cols-4) for each role using renderSummaryCards(r)",
+        "Middle Section is visible and clickable; clicking toggles sections[r].middle; content renders only when sections[r].middle is true",
+        "Bottom Section is visible and clickable; clicking toggles sections[r].bottom; content renders only when sections[r].bottom is true",
+        "Both Middle and Bottom sections use 'bg-white shadow rounded p-4 cursor-pointer' styling",
+        "Section toggle state is managed per role in a sections map keyed by role name"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/dashboard/internal.tsx",
+          "operation": "modify",
+          "description": "Add sections state as a Record mapping role names to objects with middle and bottom boolean flags (initially false). Implement toggleSection function that takes role and section key ('middle' or 'bottom') and toggles sections[role][section]. Within each role's dashboard content, render three sub-sections: (1) a section with className 'grid gap-4 md:grid-cols-4' that calls renderSummaryCards(r) to display summary cards in a 4-column grid, (2) a Middle Section with className 'bg-white shadow rounded p-4 cursor-pointer', onClick handler calling toggleSection(r, 'middle'), a header showing 'Details / List Section' with a chevron icon, and conditionally rendering renderMiddleSection(r) only when sections[r].middle is true, (3) a Bottom Section with className 'bg-white shadow rounded p-4 cursor-pointer', onClick handler calling toggleSection(r, 'bottom'), a header showing 'History / Tickets Section' with a chevron icon, and conditionally rendering renderBottomSection(r) only when sections[r].bottom is true."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Update App.tsx route to pass a valid admin role prop to InternalDashboard for end-to-end accordion testing",
+      "acceptanceCriteria": [
+        "The /dashboard/internal route renders InternalDashboard with a role that covers the admin/superadmin case for visual testing",
+        "Changing the role prop to a non-admin value (e.g., 'Concierge') should render only that role's dashboard section"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the /dashboard/internal route definition to pass role='Admin' (or 'Superadmin') as a prop to the InternalDashboard component element, enabling visual testing of the admin accordion view. Add a comment explaining that changing this prop to 'Concierge', 'AdminFinance', or 'Asistenmu' will render only that role's single dashboard section without accordion."
+        }
+      ]
+    }
+  ]
+}

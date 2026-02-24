@@ -1,0 +1,60 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-24T18:38:47.884Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 3,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Update `frontend/src/pages/dashboard/internal.tsx` to implement role-based rendering: if the current role is 'Admin' or 'Superadmin' (isSuperAdmin), render dashboards for ALL roles in a toggleable accordion (one accordion per role, toggled via `toggleRoleAccordion`); otherwise, only render the dashboard section for the currently logged-in role.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Within each role section in `frontend/src/pages/dashboard/internal.tsx`, render three sub-sections: (1) a grid of Summary Cards via `renderSummaryCards(r)`, (2) a Middle Section ('Details / List Section') toggled by clicking via `toggleSection(r, 'middle')` and conditionally rendering `renderMiddleSection(r)`, and (3) a Bottom Section ('History / Tickets Section') toggled by clicking via `toggleSection(r, 'bottom')` and conditionally rendering `renderBottomSection(r)`.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Ensure the `frontend/src/App.tsx` route for `/dashboard/internal` passes a valid role prop (e.g., 'Admin' or 'Superadmin') to `InternalDashboard` so that the admin accordion view can be tested end-to-end.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/pages/dashboard/internal.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

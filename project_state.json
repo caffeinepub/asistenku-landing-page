@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Internal Dashboard project with role-based rendering at /dashboard/internal. Admin/Superadmin see all roles in toggleable accordions; other roles only see their own dashboard. Each role section has Summary Cards, Middle Section (Details/List), and Bottom Section (History/Tickets), all toggleable.",
+  "architectural_notes": [
+    "Route /dashboard/internal renders role-based dashboards; Admin/Superadmin see all roles via accordion (toggleRoleAccordion), others see only their own role",
+    "Each role section has three parts: Summary Cards (grid), Middle Section (Details/List), Bottom Section (History/Tickets) — each toggleable via toggleSection"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-update-frontend-src-pages-dashboard-internal-tsx-to-implement-role-based-rendering-if-the-current-role-is-admin-or-superadmin-issuperadmin-render-dashboards-for-all-roles-in-a-toggleable-accordion-one-accordion-per-role-toggled-via-toggleroleaccordion-otherwise-only-render-the-dashboard-section-for-the-currently-logged-in-role",
+      "title": "Update `frontend/src/pages/dashboard/internal.tsx` to implement role-based rendering: if the current role is 'Admin' or 'Superadmin' (isSuperAdmin), render dashboards for ALL roles in a toggleable accordion (one accordion per role, toggled via `toggleRoleAccordion`); otherwise, only render the dashboard section for the currently logged-in role.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-within-each-role-section-in-frontend-src-pages-dashboard-internal-tsx-render-three-sub-sections-1-a-grid-of-summary-cards-via-rendersummarycards-r-2-a-middle-section-details-list-section-toggled-by-clicking-via-togglesection-r-middle-and-conditionally-rendering-rendermiddlesection-r-and-3-a-bottom-section-history-tickets-section-toggled-by-clicking-via-togglesection-r-bottom-and-conditionally-rendering-renderbottomsection-r",
+      "title": "Within each role section in `frontend/src/pages/dashboard/internal.tsx`, render three sub-sections: (1) a grid of Summary Cards via `renderSummaryCards(r)`, (2) a Middle Section ('Details / List Section') toggled by clicking via `toggleSection(r, 'middle')` and conditionally rendering `renderMiddleSection(r)`, and (3) a Bottom Section ('History / Tickets Section') toggled by clicking via `toggleSection(r, 'bottom')` and conditionally rendering `renderBottomSection(r)`.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-frontend-src-app-tsx-route-for-dashboard-internal-passes-a-valid-role-prop-e-g-admin-or-superadmin-to-internaldashboard-so-that-the-admin-accordion-view-can-be-tested-end-to-end",
+      "title": "Ensure the `frontend/src/App.tsx` route for `/dashboard/internal` passes a valid role prop (e.g., 'Admin' or 'Superadmin') to `InternalDashboard` so that the admin accordion view can be tested end-to-end.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add role-based rendering to /dashboard/internal: Admin/Superadmin see all roles in toggleable accordions; other roles only see their own dashboard with Summary Cards, Middle Section, and Bottom Section",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "InternalDashboard",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
