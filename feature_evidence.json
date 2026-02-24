@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-frontend-src-pages-dashboard-internal-tsx-to-implement-role-based-rendering-if-the-current-role-is-admin-or-superadmin-issuperadmin-render-dashboards-for-all-roles-in-a-toggleable-accordion-one-accordion-per-role-toggled-via-toggleroleaccordion-otherwise-only-render-the-dashboard-section-for-the-currently-logged-in-role",
-      "featureTitle": "Update `frontend/src/pages/dashboard/internal.tsx` to implement role-based rendering: if the current role is 'Admin' or 'Superadmin' (isSuperAdmin), render dashboards for ALL roles in a toggleable accordion (one accordion per role, toggled via `toggleRoleAccordion`); otherwise, only render the dashboard section for the currently logged-in role.",
+      "featureId": "feature-in-dashboard-internal-inside-the-adminuser-section-s-pending-user-list-replace-the-plain-partner-text-with-a-dropdown-options-junior-senior-expert-controlled-by-a-partnerlevel-state-and-add-a-text-input-for-verified-skill-comma-separated-below-it-both-visible-only-when-the-user-s-role-is-partner",
+      "featureTitle": "In /dashboard/internal, inside the AdminUser section's Pending User list, replace the plain Partner text with a dropdown (options: Junior, Senior, Expert) controlled by a `partnerLevel` state, and add a text input for Verified Skill (comma-separated) below it — both visible only when the user's role is 'Partner'.",
       "files": [
         "frontend/src/pages/dashboard/internal.tsx"
       ],
@@ -20,8 +20,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-within-each-role-section-in-frontend-src-pages-dashboard-internal-tsx-render-three-sub-sections-1-a-grid-of-summary-cards-via-rendersummarycards-r-2-a-middle-section-details-list-section-toggled-by-clicking-via-togglesection-r-middle-and-conditionally-rendering-rendermiddlesection-r-and-3-a-bottom-section-history-tickets-section-toggled-by-clicking-via-togglesection-r-bottom-and-conditionally-rendering-renderbottomsection-r",
-      "featureTitle": "Within each role section in `frontend/src/pages/dashboard/internal.tsx`, render three sub-sections: (1) a grid of Summary Cards via `renderSummaryCards(r)`, (2) a Middle Section ('Details / List Section') toggled by clicking via `toggleSection(r, 'middle')` and conditionally rendering `renderMiddleSection(r)`, and (3) a Bottom Section ('History / Tickets Section') toggled by clicking via `toggleSection(r, 'bottom')` and conditionally rendering `renderBottomSection(r)`.",
+      "featureId": "feature-add-an-asistenmudashboardsection-component-to-dashboard-internal-that-is-shown-when-the-logged-in-role-is-asistenmu-it-must-include-1-a-summary-grid-with-cards-for-list-client-total-task-and-per-status-counts-permintaanbaru-qaasistenmu-revisiclient-ditolakpartner-reviewclient-selesai-2-collapsible-task-sections-for-each-of-those-six-statuses-with-a-filter-input-by-id-or-client-name-and-per-task-action-buttons-delegasikan-task-for-permintaanbaru-kirim-review-ke-client-for-qaasistenmu-kirimkan-revisi-ke-partner-selesaikan-task-for-revisiclient-delegasikan-ulang-for-ditolakpartner-3-a-modal-for-delegating-a-task-with-fields-partner-id-principalid-nama-skill-jam-efektif-unit-layanan-terpakai-link-gdrive-internal-link-gdrive-client-and-batal-delegasikan-buttons-4-a-tiket-collapsible-section-with-filter-and-a-resolve-button-for-unresolved-tickets-5-a-history-collapsible-section-with-filter-all-data-is-local-mock-state-no-backend-calls-required",
+      "featureTitle": "Add an `AsistenmuDashboardSection` component to /dashboard/internal that is shown when the logged-in role is 'Asistenmu'. It must include: (1) a summary grid with cards for List Client, Total Task, and per-status counts (PermintaanBaru, QAAsistenmu, RevisiClient, DitolakPartner, ReviewClient, Selesai); (2) collapsible task sections for each of those six statuses with a filter input (by ID or client name) and per-task action buttons (Delegasikan Task for PermintaanBaru, Kirim Review ke Client for QAAsistenmu, Kirimkan Revisi ke Partner + Selesaikan Task for RevisiClient, Delegasikan Ulang for DitolakPartner); (3) a modal for delegating a task with fields: Partner (id/principalId/nama/skill), Jam Efektif, Unit Layanan Terpakai, Link GDrive Internal, Link GDrive Client, and Batal/Delegasikan buttons; (4) a Tiket collapsible section with filter and a Resolve button for unresolved tickets; (5) a History collapsible section with filter. All data is local mock state (no backend calls required).",
       "files": [
         "frontend/src/pages/dashboard/internal.tsx"
       ],
@@ -38,10 +38,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-the-frontend-src-app-tsx-route-for-dashboard-internal-passes-a-valid-role-prop-e-g-admin-or-superadmin-to-internaldashboard-so-that-the-admin-accordion-view-can-be-tested-end-to-end",
-      "featureTitle": "Ensure the `frontend/src/App.tsx` route for `/dashboard/internal` passes a valid role prop (e.g., 'Admin' or 'Superadmin') to `InternalDashboard` so that the admin accordion view can be tested end-to-end.",
+      "featureId": "feature-ensure-the-superadmin-role-at-dashboard-internal-can-view-all-internal-dashboard-sections-adminuser-asistenmu-adminfinance-and-any-others-without-restriction-i-e-the-role-based-conditional-rendering-must-allow-superadmin-to-see-every-section",
+      "featureTitle": "Ensure the Superadmin role at /dashboard/internal can view all internal dashboard sections (AdminUser, Asistenmu, AdminFinance, and any others) without restriction — i.e., the role-based conditional rendering must allow Superadmin to see every section.",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/pages/dashboard/internal.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -52,6 +52,24 @@
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-do-not-modify-the-adminfinance-dashboard-section-its-existing-ui-layout-and-logic-must-remain-exactly-as-is",
+      "featureTitle": "Do not modify the AdminFinance dashboard section — its existing UI, layout, and logic must remain exactly as-is.",
+      "files": [
+        "frontend/src/pages/dashboard/internal.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

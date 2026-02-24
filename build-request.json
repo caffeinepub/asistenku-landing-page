@@ -1,74 +1,106 @@
 {
   "kind": "build_request",
-  "title": "Add role-based rendering logic to /dashboard/internal",
-  "projectName": "Asistenku Internal",
+  "title": "Fix AdminUser Partner Level Dropdown & Add Asistenmu Dashboard Section",
+  "projectName": "Asistenku Internal Dashboard",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update `frontend/src/pages/dashboard/internal.tsx` to implement role-based rendering: if the current role is 'Admin' or 'Superadmin' (isSuperAdmin), render dashboards for ALL roles in a toggleable accordion (one accordion per role, toggled via `toggleRoleAccordion`); otherwise, only render the dashboard section for the currently logged-in role.",
+      "text": "In /dashboard/internal, inside the AdminUser section's Pending User list, replace the plain Partner text with a dropdown (options: Junior, Senior, Expert) controlled by a `partnerLevel` state, and add a text input for Verified Skill (comma-separated) below it — both visible only when the user's role is 'Partner'.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "const isSuperAdmin = role === \"Admin\" || role === \"Superadmin\";\n  const rolesToRender = isSuperAdmin ? roles : [role];"
+          "Ganti bagian Partner di Pending User jadi dropdown",
+          "<option value=\"Junior\">Junior</option>",
+          "<option value=\"Senior\">Senior</option>",
+          "<option value=\"Expert\">Expert</option>",
+          "<input placeholder=\"Verified Skill (pisahkan koma)\""
         ]
       },
       "acceptanceCriteria": [
-        "When role is 'Admin' or 'Superadmin', all roles are rendered as separate accordion sections",
-        "Each accordion section header shows the role name (e.g., 'AdminUser Dashboard') and is clickable to toggle open/closed via toggleRoleAccordion",
-        "When role is neither 'Admin' nor 'Superadmin', only the section for that specific role is rendered (no accordion toggle header shown)",
-        "Role accordion state is managed with an openRoles map per role key"
+        "When a pending user has role 'Partner', a dropdown with options Junior / Senior / Expert appears instead of a plain text label.",
+        "A text input labeled 'Verified Skill (pisahkan koma)' appears below the dropdown for Partner users.",
+        "partnerLevel and verifiedSkillInput are managed as local React state.",
+        "The dropdown and skill input do not appear for non-Partner pending users."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Within each role section in `frontend/src/pages/dashboard/internal.tsx`, render three sub-sections: (1) a grid of Summary Cards via `renderSummaryCards(r)`, (2) a Middle Section ('Details / List Section') toggled by clicking via `toggleSection(r, 'middle')` and conditionally rendering `renderMiddleSection(r)`, and (3) a Bottom Section ('History / Tickets Section') toggled by clicking via `toggleSection(r, 'bottom')` and conditionally rendering `renderBottomSection(r)`.",
+      "text": "Add an `AsistenmuDashboardSection` component to /dashboard/internal that is shown when the logged-in role is 'Asistenmu'. It must include: (1) a summary grid with cards for List Client, Total Task, and per-status counts (PermintaanBaru, QAAsistenmu, RevisiClient, DitolakPartner, ReviewClient, Selesai); (2) collapsible task sections for each of those six statuses with a filter input (by ID or client name) and per-task action buttons (Delegasikan Task for PermintaanBaru, Kirim Review ke Client for QAAsistenmu, Kirimkan Revisi ke Partner + Selesaikan Task for RevisiClient, Delegasikan Ulang for DitolakPartner); (3) a modal for delegating a task with fields: Partner (id/principalId/nama/skill), Jam Efektif, Unit Layanan Terpakai, Link GDrive Internal, Link GDrive Client, and Batal/Delegasikan buttons; (4) a Tiket collapsible section with filter and a Resolve button for unresolved tickets; (5) a History collapsible section with filter. All data is local mock state (no backend calls required).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "{/* Summary Cards */}\n              <section className=\"grid gap-4 md:grid-cols-4\">\n                {renderSummaryCards(r)}\n              </section>",
-          "{/* Middle Section */}\n              <section\n                className=\"bg-white shadow rounded p-4 cursor-pointer\"\n                onClick={() => toggleSection(r,\"middle\")}\n              >",
-          "{/* Bottom Section */}\n              <section\n                className=\"bg-white shadow rounded p-4 cursor-pointer\"\n                onClick={() => toggleSection(r,\"bottom\")}\n              >"
+          "buatkan dashboard Asistenmu di page /dashboard/internal seperti role lainnya",
+          "const AsistenmuDashboardSection = () => {",
+          "Modal Delegasi Task",
+          "Kirim Review ke Client",
+          "Kirimkan Revisi ke Partner",
+          "Selesaikan Task",
+          "Delegasikan Ulang"
         ]
       },
       "acceptanceCriteria": [
-        "Summary Cards section renders a 4-column grid (md:grid-cols-4) for each role using renderSummaryCards(r)",
-        "Middle Section is visible and clickable; clicking toggles sections[r].middle; content renders only when sections[r].middle is true",
-        "Bottom Section is visible and clickable; clicking toggles sections[r].bottom; content renders only when sections[r].bottom is true",
-        "Both Middle and Bottom sections use 'bg-white shadow rounded p-4 cursor-pointer' styling",
-        "Section toggle state is managed per role in a sections map keyed by role name"
+        "AsistenmuDashboardSection renders only when the current user role is 'Asistenmu'.",
+        "Summary cards display correct counts derived from the local tasks state.",
+        "Each of the six task statuses has its own collapsible section with a working filter input.",
+        "Action buttons match the specified type per section (Delegasikan Task, Kirim Review ke Client, etc.).",
+        "Clicking 'Delegasikan Task' or 'Delegasikan Ulang' opens the delegation modal pre-filled with the selected task ID.",
+        "The delegation modal has all five input fields and Batal / Delegasikan buttons; Batal closes the modal.",
+        "Tiket section shows tickets from local state with a filter and a Resolve button for non-resolved tickets.",
+        "History section shows history items from local state with a filter input."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Ensure the `frontend/src/App.tsx` route for `/dashboard/internal` passes a valid role prop (e.g., 'Admin' or 'Superadmin') to `InternalDashboard` so that the admin accordion view can be tested end-to-end.",
+      "text": "Ensure the Superadmin role at /dashboard/internal can view all internal dashboard sections (AdminUser, Asistenmu, AdminFinance, and any others) without restriction — i.e., the role-based conditional rendering must allow Superadmin to see every section.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
+        ],
+        "quotes": [
+          "untuk Dashboard superadmin itu tidak ada batasan view karena dia adalah admin jadi dia bisa liat semua fitur dashboard internal lain"
         ]
       },
       "acceptanceCriteria": [
-        "The /dashboard/internal route renders InternalDashboard with a role that covers the admin/superadmin case for visual testing",
-        "Changing the role prop to a non-admin value (e.g., 'Concierge') should render only that role's dashboard section"
+        "When the logged-in role is 'Superadmin', all dashboard sections (AdminUser, Asistenmu, AdminFinance, etc.) are rendered simultaneously.",
+        "No section is hidden or restricted for the Superadmin role."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Do not modify the AdminFinance dashboard section — its existing UI, layout, and logic must remain exactly as-is.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "jangan ubah tampilan yang sudah ada di AdminFinance"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The AdminFinance section in /dashboard/internal is pixel-identical to the version before these changes.",
+        "No props, state, or rendering logic of AdminFinanceDashboardSection is altered."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/hooks/ or frontend/src/components/ui/",
-    "Keep all dashboard logic within frontend/src/pages/dashboard/internal.tsx",
-    "Backend (backend/main.mo) should not be changed — this is a frontend-only update"
+    "Do not modify AdminFinance dashboard section in any way.",
+    "All new data (tasks, tickets, history) must use local mock state — no backend calls.",
+    "Do not change any file listed in frontend.immutablePaths."
   ],
   "nonGoals": [
-    "Connecting the dashboard to live backend/canister data",
-    "Implementing real authentication or role resolution from Internet Identity",
-    "Adding new roles beyond the existing four (AdminUser, AdminFinance, Asistenmu, Concierge)"
+    "Backend persistence or API integration for Asistenmu tasks, tickets, or history.",
+    "Real partner search or lookup logic in the delegation modal.",
+    "Changes to any page other than /dashboard/internal.",
+    "Changes to the AdminFinance section."
   ],
   "imageRequirements": {
     "required": [],

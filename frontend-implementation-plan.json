@@ -1,55 +1,73 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add role-based rendering logic to /dashboard/internal",
+  "title": "Fix AdminUser Partner Level Dropdown & Add Asistenmu Dashboard Section",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Implement role-based accordion rendering: Admin/Superadmin sees all roles in toggleable accordions, other roles see only their own dashboard section",
+      "summary": "Replace plain Partner text with a dropdown (Junior/Senior/Expert) and add Verified Skill text input in AdminUser Pending User list, visible only when user role is Partner",
       "acceptanceCriteria": [
-        "When role is 'Admin' or 'Superadmin', all roles are rendered as separate accordion sections",
-        "Each accordion section header shows the role name (e.g., 'AdminUser Dashboard') and is clickable to toggle open/closed via toggleRoleAccordion",
-        "When role is neither 'Admin' nor 'Superadmin', only the section for that specific role is rendered (no accordion toggle header shown)",
-        "Role accordion state is managed with an openRoles map per role key"
+        "When a pending user has role 'Partner', a dropdown with options Junior / Senior / Expert appears instead of a plain text label.",
+        "A text input labeled 'Verified Skill (pisahkan koma)' appears below the dropdown for Partner users.",
+        "partnerLevel and verifiedSkillInput are managed as local React state.",
+        "The dropdown and skill input do not appear for non-Partner pending users."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/dashboard/internal.tsx",
           "operation": "modify",
-          "description": "Add isSuperAdmin boolean computed from role ('Admin' or 'Superadmin'). Create rolesToRender array that contains all four roles if isSuperAdmin, otherwise contains only the current role. Add openRoles state map to track which role accordions are open. Implement toggleRoleAccordion function to toggle openRoles[role]. Update render logic to map over rolesToRender: for each role, if isSuperAdmin render an accordion header with the role name and chevron icon that calls toggleRoleAccordion on click, conditionally showing/hiding the role's dashboard content based on openRoles[role]; if not isSuperAdmin, render the role section directly without accordion wrapper."
+          "description": "In the AdminUser section's Pending User list rendering logic, replace the plain Partner role text display with a conditional: when user.role === 'Partner', render a select dropdown with options Junior/Senior/Expert controlled by a partnerLevel state variable, and below it render a text input for Verified Skill (comma-separated) controlled by verifiedSkillInput state. Both elements should be wrapped in a conditional check that ensures they only appear for Partner-role pending users. Add local state for partnerLevel and verifiedSkillInput at the component level."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Render three sub-sections per role: Summary Cards grid, toggleable Middle Section, and toggleable Bottom Section with per-role state management",
+      "summary": "Add AsistenmuDashboardSection component with summary cards, six collapsible task status sections with filters and action buttons, delegation modal, Tiket section, and History section using local mock state",
       "acceptanceCriteria": [
-        "Summary Cards section renders a 4-column grid (md:grid-cols-4) for each role using renderSummaryCards(r)",
-        "Middle Section is visible and clickable; clicking toggles sections[r].middle; content renders only when sections[r].middle is true",
-        "Bottom Section is visible and clickable; clicking toggles sections[r].bottom; content renders only when sections[r].bottom is true",
-        "Both Middle and Bottom sections use 'bg-white shadow rounded p-4 cursor-pointer' styling",
-        "Section toggle state is managed per role in a sections map keyed by role name"
+        "AsistenmuDashboardSection renders only when the current user role is 'Asistenmu'.",
+        "Summary cards display correct counts derived from the local tasks state.",
+        "Each of the six task statuses has its own collapsible section with a working filter input.",
+        "Action buttons match the specified type per section (Delegasikan Task, Kirim Review ke Client, etc.).",
+        "Clicking 'Delegasikan Task' or 'Delegasikan Ulang' opens the delegation modal pre-filled with the selected task ID.",
+        "The delegation modal has all five input fields and Batal / Delegasikan buttons; Batal closes the modal.",
+        "Tiket section shows tickets from local state with a filter and a Resolve button for non-resolved tickets.",
+        "History section shows history items from local state with a filter input."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/dashboard/internal.tsx",
           "operation": "modify",
-          "description": "Add sections state as a Record mapping role names to objects with middle and bottom boolean flags (initially false). Implement toggleSection function that takes role and section key ('middle' or 'bottom') and toggles sections[role][section]. Within each role's dashboard content, render three sub-sections: (1) a section with className 'grid gap-4 md:grid-cols-4' that calls renderSummaryCards(r) to display summary cards in a 4-column grid, (2) a Middle Section with className 'bg-white shadow rounded p-4 cursor-pointer', onClick handler calling toggleSection(r, 'middle'), a header showing 'Details / List Section' with a chevron icon, and conditionally rendering renderMiddleSection(r) only when sections[r].middle is true, (3) a Bottom Section with className 'bg-white shadow rounded p-4 cursor-pointer', onClick handler calling toggleSection(r, 'bottom'), a header showing 'History / Tickets Section' with a chevron icon, and conditionally rendering renderBottomSection(r) only when sections[r].bottom is true."
+          "description": "Create a new AsistenmuDashboardSection component within this file that renders when the logged-in role is 'Asistenmu'. The component must include: (1) a summary grid with cards for List Client, Total Task, and per-status counts (PermintaanBaru, QAAsistenmu, RevisiClient, DitolakPartner, ReviewClient, Selesai); (2) six collapsible task sections, one for each status (PermintaanBaru, QAAsistenmu, RevisiClient, DitolakPartner, ReviewClient, Selesai), each with a filter input (by ID or client name) and per-task action buttons—Delegasikan Task for PermintaanBaru, Kirim Review ke Client for QAAsistenmu, Kirimkan Revisi ke Partner and Selesaikan Task for RevisiClient, Delegasikan Ulang for DitolakPartner; (3) a modal for delegating a task with fields: Partner (id/principalId/nama/skill), Jam Efektif, Unit Layanan Terpakai, Link GDrive Internal, Link GDrive Client, and Batal/Delegasikan buttons; (4) a Tiket collapsible section with filter and a Resolve button for unresolved tickets; (5) a History collapsible section with filter. All data (tasks, tickets, history) must use local mock state arrays. Wire the AsistenmuDashboardSection into the main conditional rendering logic alongside the existing AdminUser, AdminFinance, and other sections. Use shadcn/ui components for UI elements (Card, Collapsible, Input, Button, Select, Dialog) following the existing patterns in the file."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Update App.tsx route to pass a valid admin role prop to InternalDashboard for end-to-end accordion testing",
+      "summary": "Enable Superadmin role to view all internal dashboard sections (AdminUser, Asistenmu, AdminFinance, etc.) without restriction",
       "acceptanceCriteria": [
-        "The /dashboard/internal route renders InternalDashboard with a role that covers the admin/superadmin case for visual testing",
-        "Changing the role prop to a non-admin value (e.g., 'Concierge') should render only that role's dashboard section"
+        "When the logged-in role is 'Superadmin', all dashboard sections (AdminUser, Asistenmu, AdminFinance, etc.) are rendered simultaneously.",
+        "No section is hidden or restricted for the Superadmin role."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/pages/dashboard/internal.tsx",
           "operation": "modify",
-          "description": "Update the /dashboard/internal route definition to pass role='Admin' (or 'Superadmin') as a prop to the InternalDashboard component element, enabling visual testing of the admin accordion view. Add a comment explaining that changing this prop to 'Concierge', 'AdminFinance', or 'Asistenmu' will render only that role's single dashboard section without accordion."
+          "description": "Update the role-based conditional rendering logic to allow the Superadmin role to view all dashboard sections simultaneously. Modify the existing conditional checks so that when the current role is 'Superadmin', all sections (AdminUser, Asistenmu, AdminFinance, and any others) are rendered without restriction. Ensure the logic uses OR conditions to include Superadmin alongside each section's primary role."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Do not modify the AdminFinance dashboard section — keep its existing UI, layout, and logic unchanged",
+      "acceptanceCriteria": [
+        "The AdminFinance section in /dashboard/internal is pixel-identical to the version before these changes.",
+        "No props, state, or rendering logic of AdminFinanceDashboardSection is altered."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/dashboard/internal.tsx",
+          "operation": "modify",
+          "description": "Verify that no changes are made to the AdminFinanceDashboardSection component or its rendering logic. Only modify the conditional rendering wrapper to include Superadmin access (REQ-3), but do not touch the component's internal implementation, props, state, or UI structure."
         }
       ]
     }
