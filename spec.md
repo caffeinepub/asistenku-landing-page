@@ -1,18 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the Partner Level field in the AdminUser Pending User list and add a full Asistenmu dashboard section to `/dashboard/internal`, while ensuring Superadmin can see all sections and AdminFinance remains untouched.
+**Goal:** Overhaul the internal dashboard UI in `frontend/src/pages/dashboard/internal.tsx` with collapsible sections, ticket action buttons, an enhanced Asistenmu layout, updated GMV cards, and an autocomplete client search.
 
 **Planned changes:**
-- In the AdminUser Pending User list, replace the plain "Partner" text label with a dropdown (Junior / Senior / Expert) controlled by `partnerLevel` state, and add a "Verified Skill (pisahkan koma)" text input below it — both visible only when the pending user's role is `Partner`.
-- Add an `AsistenmuDashboardSection` component rendered only when the logged-in role is `Asistenmu`, containing:
-  - A summary grid with cards for List Client, Total Task, and per-status counts (PermintaanBaru, QAAsistenmu, RevisiClient, DitolakPartner, ReviewClient, Selesai).
-  - Six collapsible task sections (one per status) each with a filter input and role-appropriate action buttons (Delegasikan Task, Kirim Review ke Client, Kirimkan Revisi ke Partner, Selesaikan Task, Delegasikan Ulang).
-  - A delegation modal with fields: Partner (id/principalId/nama/skill), Jam Efektif, Unit Layanan Terpakai, Link GDrive Internal, Link GDrive Client, and Batal/Delegasikan buttons.
-  - A collapsible Tiket section with filter and Resolve button for unresolved tickets.
-  - A collapsible History section with filter input.
-  - All data sourced from local mock state (no backend calls).
-- Update role-based conditional rendering so that the `Superadmin` role sees all dashboard sections (AdminUser, Asistenmu, AdminFinance, and others) simultaneously with no restrictions.
-- Leave the AdminFinance dashboard section completely unchanged.
+- Wrap each sub-dashboard (AdminUser, AdminFinance, Asistenmu, Concierge) in a Collapsible component (defaultOpen) with a CardTitle trigger in the Superadmin view
+- Add Progress and Resolve action buttons to ticket rows in AdminUser, AdminFinance, and Asistenmu dashboards; Progress requires a mandatory notes textarea, Resolve opens a modal with a mandatory notes textarea and a disabled-until-filled "Resolve Tiket" button
+- In the Asistenmu dashboard, add a "Client Terkait" collapsible section (defaultOpen) below summary cards showing a table with columns: ID Layanan, Tipe Layanan, Nama Client, Status Layanan, Unit Aktif, Share Layanan (mock data)
+- In the Asistenmu dashboard, consolidate the six task status cards (Permintaan Baru, QA Asistenmu, Revisi Client, Ditolak Partner, Review Client, Selesai) into a single "Task Management" collapsible section; tasks in "Ditolak Partner" get a "Delegasikan Ulang" button that opens a modal with all fields pre-filled and read-only except the Partner selection field
+- In the AdminFinance dashboard, replace the existing GMV summary cards with five per-service-type cards: Tenang, Rapi, Fokus, Jaga, Efisien
+- In the AdminFinance Aktivasi Layanan form, replace the client dropdown with an autocomplete search input that filters by name, user ID, or principal ID
 
-**User-visible outcome:** Admins managing Partner users can now set a partner level and verified skills during approval. The Asistenmu role gets its own full-featured dashboard for task delegation, review, ticket resolution, and history. Superadmin can view all internal dashboard sections at once.
+**User-visible outcome:** Internal dashboard users will see collapsible sub-dashboards in the Superadmin view, ticket rows with Progress/Resolve actions across AdminUser, AdminFinance, and Asistenmu dashboards, an enriched Asistenmu layout with a client list and unified Task Management section, updated GMV cards by service type, and a smarter client search in the Aktivasi Layanan form.

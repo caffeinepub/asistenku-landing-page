@@ -1,18 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T21:54:04.551Z",
+  "generatedAt": "2026-02-25T01:25:16.853Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 8,
+    "implemented": 8,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "In /dashboard/internal, inside the AdminUser section's Pending User list, replace the plain Partner text with a dropdown (options: Junior, Senior, Expert) controlled by a `partnerLevel` state, and add a text input for Verified Skill (comma-separated) below it — both visible only when the user's role is 'Partner'.",
+        "summary": "In the Superadmin dashboard section of frontend/src/pages/dashboard/internal.tsx, wrap each sub-dashboard (AdminUser, AdminFinance, Asistenmu, Concierge) in a Collapsible component with defaultOpen=true. Each collapsible trigger must display the dashboard name as a CardTitle inside a CardHeader.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/dashboard/internal.tsx"
@@ -23,7 +23,7 @@
       },
       {
         "id": "REQ-2",
-        "summary": "Add an `AsistenmuDashboardSection` component to /dashboard/internal that is shown when the logged-in role is 'Asistenmu'. It must include: (1) a summary grid with cards for List Client, Total Task, and per-status counts (PermintaanBaru, QAAsistenmu, RevisiClient, DitolakPartner, ReviewClient, Selesai); (2) collapsible task sections for each of those six statuses with a filter input (by ID or client name) and per-task action buttons (Delegasikan Task for PermintaanBaru, Kirim Review ke Client for QAAsistenmu, Kirimkan Revisi ke Partner + Selesaikan Task for RevisiClient, Delegasikan Ulang for DitolakPartner); (3) a modal for delegating a task with fields: Partner (id/principalId/nama/skill), Jam Efektif, Unit Layanan Terpakai, Link GDrive Internal, Link GDrive Client, and Batal/Delegasikan buttons; (4) a Tiket collapsible section with filter and a Resolve button for unresolved tickets; (5) a History collapsible section with filter. All data is local mock state (no backend calls required).",
+        "summary": "In the AdminUser dashboard ticket list, add Progress and Resolve action buttons for each ticket row. Pressing Progress opens an inline or modal area requiring a mandatory notes textarea; the action is only confirmed after notes are submitted. Pressing Resolve opens a modal with a mandatory notes textarea and a 'Resolve Tiket' confirmation button.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/dashboard/internal.tsx"
@@ -34,7 +34,7 @@
       },
       {
         "id": "REQ-3",
-        "summary": "Ensure the Superadmin role at /dashboard/internal can view all internal dashboard sections (AdminUser, Asistenmu, AdminFinance, and any others) without restriction — i.e., the role-based conditional rendering must allow Superadmin to see every section.",
+        "summary": "In the Asistenmu dashboard, place the summary cards at the top, then immediately below add a 'Client Terkait' collapsible section (defaultOpen) showing a table of clients related to the current Asistenmu user. The table columns must be: ID Layanan, Tipe Layanan, Nama Client, Status Layanan, Unit Aktif, Share Layanan.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/dashboard/internal.tsx"
@@ -45,7 +45,51 @@
       },
       {
         "id": "REQ-4",
-        "summary": "Do not modify the AdminFinance dashboard section — its existing UI, layout, and logic must remain exactly as-is.",
+        "summary": "In the Asistenmu dashboard, consolidate the task status cards (Permintaan Baru, QA Asistenmu, Revisi Client, Ditolak Partner, Review Client, Selesai) into a single collapsible 'Task Management' section. Each status is rendered as a sub-card within that section. For tasks under 'Ditolak Partner', show a 'Delegasikan Ulang' button that opens a modal displaying all task delegation fields — all fields except the Partner selection field must be read-only (pre-filled from the existing task data).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "In the Asistenmu dashboard ticket list, add Progress and Resolve action buttons to each ticket row. Both buttons require a mandatory notes textarea before confirming. Resolve opens a modal with a 'Resolve Tiket' button that is disabled until notes are filled.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "In the AdminFinance dashboard, replace the existing GMV summary cards (which currently show virtual/concierge breakdown) with per-service-type GMV cards showing values for: Tenang, Rapi, Fokus, Jaga, and Efisien.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "In the AdminFinance dashboard Aktivasi Layanan form, replace the client dropdown with an autocomplete search input. The search must filter clients by name, user ID, or principal ID, showing matching suggestions as the user types. Selecting a suggestion populates the client field.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/dashboard/internal.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "In the AdminFinance dashboard ticket list, add Progress and Resolve action buttons to each ticket row. Both buttons require a mandatory notes textarea before confirming the action. The Resolve action opens a modal with a 'Resolve Tiket' button that is disabled until notes are filled.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/dashboard/internal.tsx"

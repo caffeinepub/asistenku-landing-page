@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import DashboardShell from "@/components/layout/DashboardShell";
 import {
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -19,19 +20,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   ChevronDown,
   ChevronUp,
   Search,
   CheckCircle,
   XCircle,
   TrendingUp,
-  Users,
   DollarSign,
   Activity,
   Mail,
   Calendar,
   User,
   AlertCircle,
+  Layers,
 } from "lucide-react";
 
 // ─── AdminUser interfaces & mock data ─────────────────────────────────────────
@@ -165,8 +181,11 @@ async function fetchHistory(): Promise<HistoryItem[]> {
 
 const mockFinanceSummary = {
   gmvTotal: "Rp 125.500.000",
-  gmvConcierge: "Rp 75.000.000",
-  gmvVirtual: "Rp 50.500.000",
+  gmvTenang: "Rp 30.000.000",
+  gmvRapi: "Rp 25.500.000",
+  gmvFokus: "Rp 28.000.000",
+  gmvJaga: "Rp 22.000.000",
+  gmvEfisien: "Rp 20.000.000",
   margin: "Rp 18.825.000",
   layananAktif: 42,
   pendingWithdraw: 5,
@@ -213,6 +232,22 @@ const mockFinanceTickets = [
   { id: "FT001", user: "PT Maju Bersama", subject: "Invoice tidak sesuai", status: "Masuk", date: "2024-03-15" },
   { id: "FT002", user: "CV Sejahtera", subject: "Pembayaran belum terkonfirmasi", status: "Proses", date: "2024-03-14" },
   { id: "FT003", user: "Ahmad Fauzi", subject: "Withdraw belum cair", status: "Masuk", date: "2024-03-13" },
+];
+
+// ─── Extended client list for autocomplete ────────────────────────────────────
+
+interface ClientExtended {
+  idUser: string;
+  name: string;
+  principalId: string;
+}
+
+const mockClientsExtended: ClientExtended[] = [
+  { idUser: "C001", name: "Client A", principalId: "xxxxx-yyyyy-zzzzz-00001" },
+  { idUser: "C002", name: "Client B", principalId: "xxxxx-yyyyy-zzzzz-00002" },
+  { idUser: "C003", name: "PT Maju Jaya", principalId: "xxxxx-yyyyy-zzzzz-00003" },
+  { idUser: "C004", name: "CV Berkah Abadi", principalId: "xxxxx-yyyyy-zzzzz-00004" },
+  { idUser: "C005", name: "Budi Santoso", principalId: "aaaaa-bbbbb-ccccc-00001" },
 ];
 
 // ─── Aktivasi Layanan interfaces & mock functions ─────────────────────────────
@@ -277,19 +312,17 @@ async function activateService(service: Service): Promise<boolean> {
   return true;
 }
 
-async function topupService(idService: string, tambahanUnit: number): Promise<boolean> {
-  console.log("Top-up Service:", idService, tambahanUnit);
-  return true;
-}
-
 // ─── Asistenmu mock data ──────────────────────────────────────────────────────
 
 interface AsistenmuTask {
   id: string;
   clientName: string;
   partnerName?: string;
+  partnerId?: string;
   serviceType: string;
   unitUsed?: number;
+  deadline?: string;
+  instruksi?: string;
   status: string;
 }
 
@@ -306,14 +339,30 @@ interface AsistenmuHistoryItem {
   date: string;
 }
 
+// Mock client layanan terkait Asistenmu
+interface AsistenmuClientLayanan {
+  idLayanan: string;
+  tipeLayanan: string;
+  namaClient: string;
+  statusLayanan: string;
+  unitAktif: number;
+  shareLayanan: string;
+}
+
+const mockAsistenmuClientLayanan: AsistenmuClientLayanan[] = [
+  { idLayanan: "S001", tipeLayanan: "Tenang", namaClient: "PT Maju Jaya", statusLayanan: "Aktif", unitAktif: 5, shareLayanan: "Asisten 2" },
+  { idLayanan: "S002", tipeLayanan: "Rapi", namaClient: "CV Berkah", statusLayanan: "Aktif", unitAktif: 3, shareLayanan: "-" },
+  { idLayanan: "S003", tipeLayanan: "Fokus", namaClient: "Budi Santoso", statusLayanan: "Hold", unitAktif: 2, shareLayanan: "Asisten 3, Asisten 4" },
+];
+
 const mockAsistenmuTasks: AsistenmuTask[] = [
   { id: "AT001", clientName: "PT Maju Jaya", serviceType: "Tenang", status: "PermintaanBaru" },
   { id: "AT002", clientName: "CV Berkah", serviceType: "Rapi", status: "PermintaanBaru" },
-  { id: "AT003", clientName: "PT Maju Jaya", partnerName: "Siti Rahayu", serviceType: "Fokus", unitUsed: 3, status: "QAAsistenmu" },
-  { id: "AT004", clientName: "Budi Santoso", partnerName: "Ahmad Fauzi", serviceType: "Tenang", unitUsed: 2, status: "RevisiClient" },
-  { id: "AT005", clientName: "CV Berkah", partnerName: "Rudi Hermawan", serviceType: "Jaga", unitUsed: 1, status: "DitolakPartner" },
-  { id: "AT006", clientName: "PT Maju Jaya", partnerName: "Siti Rahayu", serviceType: "Efisien", unitUsed: 4, status: "ReviewClient" },
-  { id: "AT007", clientName: "Budi Santoso", partnerName: "Ahmad Fauzi", serviceType: "Tenang", unitUsed: 5, status: "Selesai" },
+  { id: "AT003", clientName: "PT Maju Jaya", partnerName: "Siti Rahayu", partnerId: "P002", serviceType: "Fokus", unitUsed: 3, deadline: "2026-03-01", instruksi: "Buat konten untuk media sosial", status: "QAAsistenmu" },
+  { id: "AT004", clientName: "Budi Santoso", partnerName: "Ahmad Fauzi", partnerId: "P003", serviceType: "Tenang", unitUsed: 2, deadline: "2026-03-05", instruksi: "Bantu pengelolaan email", status: "RevisiClient" },
+  { id: "AT005", clientName: "CV Berkah", partnerName: "Rudi Hermawan", partnerId: "P005", serviceType: "Jaga", unitUsed: 1, deadline: "2026-03-10", instruksi: "Monitor laporan harian", status: "DitolakPartner" },
+  { id: "AT006", clientName: "PT Maju Jaya", partnerName: "Siti Rahayu", partnerId: "P002", serviceType: "Efisien", unitUsed: 4, deadline: "2026-03-08", instruksi: "Optimasi proses administrasi", status: "ReviewClient" },
+  { id: "AT007", clientName: "Budi Santoso", partnerName: "Ahmad Fauzi", partnerId: "P003", serviceType: "Tenang", unitUsed: 5, deadline: "2026-02-28", instruksi: "Pengelolaan kalender", status: "Selesai" },
 ];
 
 const mockAsistenmuTickets: AsistenmuTicket[] = [
@@ -371,6 +420,7 @@ function StatusBadge({ status }: { status: string }) {
     Rejected: "bg-red-100 text-red-700",
     Hold: "bg-orange-100 text-orange-700",
     Resolved: "bg-emerald-100 text-emerald-700",
+    open: "bg-blue-100 text-blue-700",
   };
   return (
     <span
@@ -383,32 +433,95 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// ─── Ticket Action Modal (shared) ─────────────────────────────────────────────
+
+interface TicketActionModalProps {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (notes: string) => void;
+  mode: "progress" | "resolve";
+  ticketId: string;
+}
+
+function TicketActionModal({ open, onClose, onConfirm, mode, ticketId }: TicketActionModalProps) {
+  const [notes, setNotes] = useState("");
+
+  const handleConfirm = () => {
+    if (!notes.trim()) return;
+    onConfirm(notes.trim());
+    setNotes("");
+  };
+
+  const handleClose = () => {
+    setNotes("");
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-base">
+            {mode === "progress" ? "Progress Tiket" : "Resolve Tiket"}: {ticketId}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 py-2">
+          <div className="space-y-1">
+            <Label className="text-xs text-slate-600">
+              Notes <span className="text-red-500">*</span>
+            </Label>
+            <Textarea
+              placeholder={mode === "progress" ? "Catatan progress tiket..." : "Catatan penyelesaian tiket..."}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="min-h-[80px] text-sm"
+            />
+          </div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="outline" size="sm" onClick={handleClose}>
+            Batal
+          </Button>
+          <Button
+            size="sm"
+            className={mode === "progress" ? "bg-amber-600 hover:bg-amber-700" : "bg-emerald-600 hover:bg-emerald-700"}
+            onClick={handleConfirm}
+            disabled={!notes.trim()}
+          >
+            {mode === "progress" ? "Simpan Progress" : "Resolve Tiket"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ─── AdminUser Dashboard ──────────────────────────────────────────────────────
 
 function AdminUserDashboard() {
-  // --- State ---
   const [users, setUsers] = useState<UserItem[]>([]);
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [searchUser, setSearchUser] = useState<string>("");
 
-  // Per-user role selection for Internal pending users (keyed by idUser)
   const [pendingRoles, setPendingRoles] = useState<Record<string, string>>({});
-  // Per-user partner level for Partner pending users (keyed by idUser)
   const [pendingPartnerLevel, setPendingPartnerLevel] = useState<Record<string, string>>({});
-  // Per-user verified skill input for Partner pending users (keyed by idUser)
   const [pendingVerifiedSkill, setPendingVerifiedSkill] = useState<Record<string, string>>({});
-  // Validation error messages per user
   const [approveErrors, setApproveErrors] = useState<Record<string, string>>({});
 
-  // --- Load Data ---
+  // Ticket action modal state
+  const [ticketModal, setTicketModal] = useState<{ open: boolean; mode: "progress" | "resolve"; ticketId: string }>({
+    open: false,
+    mode: "resolve",
+    ticketId: "",
+  });
+
   useEffect(() => {
     fetchUsers().then(setUsers);
     fetchTickets().then(setTickets);
     fetchHistory().then(setHistory);
   }, []);
 
-  // --- Filtered lists ---
   const filteredUsers = users.filter(
     (u) =>
       u.idUser.toLowerCase().includes(searchUser.toLowerCase()) ||
@@ -418,7 +531,6 @@ function AdminUserDashboard() {
   const aktifUsers = filteredUsers.filter((u) => u.status === "Aktif");
   const suspendedUsers = filteredUsers.filter((u) => u.status === "Suspended");
 
-  // --- Summary Counts ---
   const totalUser = users.length;
   const totalPending = users.filter((u) => u.status === "Pending").length;
   const totalClient = users.filter((u) => u.role === "Client" && u.status === "Aktif").length;
@@ -426,7 +538,6 @@ function AdminUserDashboard() {
   const totalPartner = users.filter((u) => u.role === "Partner" && u.status === "Aktif").length;
   const totalSuspended = users.filter((u) => u.status === "Suspended").length;
 
-  // --- Action handlers ---
   const approveUser = (u: UserItem) => {
     if (u.role === "Internal") {
       const role = pendingRoles[u.idUser] || "";
@@ -457,9 +568,7 @@ function AdminUserDashboard() {
       prev.map((item) => {
         if (item.idUser !== u.idUser) return item;
         const updated: UserItem = { ...item, status: "Aktif" as const };
-        if (u.role === "Internal") {
-          updated.assignedRole = pendingRoles[u.idUser];
-        }
+        if (u.role === "Internal") updated.assignedRole = pendingRoles[u.idUser];
         if (u.role === "Partner") {
           updated.levelPartner = pendingPartnerLevel[u.idUser];
           updated.verifiedSkill = (pendingVerifiedSkill[u.idUser] || "")
@@ -494,6 +603,18 @@ function AdminUserDashboard() {
     setUsers((prev) =>
       prev.map((u) => (u.idUser === idUser ? { ...u, status: "Aktif" as const } : u))
     );
+  };
+
+  const handleTicketAction = (notes: string) => {
+    const { mode, ticketId } = ticketModal;
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? { ...t, status: mode === "progress" ? "Proses" : "Selesai" }
+          : t
+      )
+    );
+    setTicketModal({ open: false, mode: "resolve", ticketId: "" });
   };
 
   return (
@@ -543,240 +664,742 @@ function AdminUserDashboard() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
           type="text"
-          placeholder="Search user by ID / Name"
-          className="pl-9"
+          placeholder="Cari user berdasarkan ID atau nama..."
           value={searchUser}
           onChange={(e) => setSearchUser(e.target.value)}
+          className="pl-9"
         />
       </div>
 
       {/* Pending Users */}
-      <SectionCollapsible title={`⏳ Pending Users (${pendingUsers.length})`} defaultOpen>
+      <SectionCollapsible title={`Pending Users (${pendingUsers.length})`} defaultOpen>
         {pendingUsers.length === 0 ? (
-          <p className="text-slate-500 text-sm py-2">No pending users</p>
+          <p className="text-sm text-slate-500 px-2">Tidak ada user pending.</p>
         ) : (
-          pendingUsers.map((u) => (
-            <div
-              key={u.idUser}
-              className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm"
-            >
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                {/* User Info */}
-                <div className="space-y-0.5 flex-1">
-                  <p className="text-sm font-medium text-slate-800">
-                    ID: <span className="font-mono">{u.idUser}</span> | {u.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Role:{" "}
-                    <span className="font-semibold text-slate-700">{u.role}</span>
-                    {u.assignedRole && (
-                      <span className="ml-1 text-teal-600">({u.assignedRole})</span>
-                    )}
-                  </p>
-                  <p className="text-xs text-slate-400 font-mono">Principal: {u.principalId}</p>
-
-                  {/* Internal: Role selector */}
-                  {u.role === "Internal" && (
-                    <div className="mt-2">
-                      <Label className="text-xs text-slate-600 mb-1 block">Assign Role Internal</Label>
-                      <Select
-                        value={pendingRoles[u.idUser] || ""}
-                        onValueChange={(val) =>
-                          setPendingRoles((prev) => ({ ...prev, [u.idUser]: val }))
-                        }
-                      >
-                        <SelectTrigger className="h-8 text-xs w-48">
-                          <SelectValue placeholder="Pilih Role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Asistenmu">Asistenmu</SelectItem>
-                          <SelectItem value="AdminFinance">AdminFinance</SelectItem>
-                          <SelectItem value="Concierge">Concierge</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {/* Partner: Level dropdown + Verified Skill input */}
-                  {u.role === "Partner" && (
-                    <div className="space-y-2 mt-2">
-                      <div>
-                        <Label className="text-xs text-slate-600 mb-1 block">Level Partner</Label>
-                        <Select
-                          value={pendingPartnerLevel[u.idUser] || ""}
-                          onValueChange={(val) =>
-                            setPendingPartnerLevel((prev) => ({ ...prev, [u.idUser]: val }))
-                          }
-                        >
-                          <SelectTrigger className="h-8 text-xs w-48">
-                            <SelectValue placeholder="Pilih Level Partner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Junior">Junior</SelectItem>
-                            <SelectItem value="Senior">Senior</SelectItem>
-                            <SelectItem value="Expert">Expert</SelectItem>
-                          </SelectContent>
-                        </Select>
+          <div className="space-y-3">
+            {pendingUsers.map((u) => (
+              <Card key={u.idUser} className="border-amber-200 bg-amber-50/50">
+                <CardContent className="p-4">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-slate-500" />
+                        <span className="font-semibold text-slate-800">{u.name}</span>
+                        <Badge variant="outline" className="text-xs">{u.role}</Badge>
                       </div>
-                      <Input
-                        placeholder="Verified Skill (pisahkan koma)"
-                        value={pendingVerifiedSkill[u.idUser] || ""}
-                        onChange={(e) =>
-                          setPendingVerifiedSkill((prev) => ({
-                            ...prev,
-                            [u.idUser]: e.target.value,
-                          }))
-                        }
-                        className="h-8 text-xs w-full max-w-xs"
-                      />
+                      <p className="text-xs text-slate-500">ID: {u.idUser}</p>
+                      <p className="text-xs text-slate-500 font-mono truncate max-w-xs">Principal: {u.principalId}</p>
                     </div>
-                  )}
-
-                  {/* Validation error */}
-                  {approveErrors[u.idUser] && (
-                    <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
-                      {approveErrors[u.idUser]}
-                    </p>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 sm:flex-col sm:items-end">
-                  <Button
-                    size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-3"
-                    onClick={() => approveUser(u)}
-                  >
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="text-xs h-7 px-3"
-                    onClick={() => rejectUser(u.idUser)}
-                  >
-                    <XCircle className="h-3 w-3 mr-1" />
-                    Reject
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))
+                    <div className="flex flex-col gap-2 min-w-[200px]">
+                      {u.role === "Internal" && (
+                        <div className="space-y-1">
+                          <Label className="text-xs text-slate-600">Assign Role</Label>
+                          <Select
+                            value={pendingRoles[u.idUser] || ""}
+                            onValueChange={(val) =>
+                              setPendingRoles((prev) => ({ ...prev, [u.idUser]: val }))
+                            }
+                          >
+                            <SelectTrigger className="h-8 text-xs">
+                              <SelectValue placeholder="Pilih role..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="AdminUser">AdminUser</SelectItem>
+                              <SelectItem value="AdminFinance">AdminFinance</SelectItem>
+                              <SelectItem value="Asistenmu">Asistenmu</SelectItem>
+                              <SelectItem value="Concierge">Concierge</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {u.role === "Partner" && (
+                        <div className="space-y-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-slate-600">Level Partner</Label>
+                            <Select
+                              value={pendingPartnerLevel[u.idUser] || ""}
+                              onValueChange={(val) =>
+                                setPendingPartnerLevel((prev) => ({ ...prev, [u.idUser]: val }))
+                              }
+                            >
+                              <SelectTrigger className="h-8 text-xs">
+                                <SelectValue placeholder="Pilih level..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Junior">Junior</SelectItem>
+                                <SelectItem value="Senior">Senior</SelectItem>
+                                <SelectItem value="Expert">Expert</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-slate-600">Verified Skill</Label>
+                            <Input
+                              className="h-8 text-xs"
+                              placeholder="e.g. Design, SEO"
+                              value={pendingVerifiedSkill[u.idUser] || ""}
+                              onChange={(e) =>
+                                setPendingVerifiedSkill((prev) => ({
+                                  ...prev,
+                                  [u.idUser]: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {approveErrors[u.idUser] && (
+                        <p className="text-xs text-red-600">{approveErrors[u.idUser]}</p>
+                      )}
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="flex-1 h-8 text-xs bg-emerald-600 hover:bg-emerald-700"
+                          onClick={() => approveUser(u)}
+                        >
+                          <CheckCircle className="h-3 w-3 mr-1" /> Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="flex-1 h-8 text-xs"
+                          onClick={() => rejectUser(u.idUser)}
+                        >
+                          <XCircle className="h-3 w-3 mr-1" /> Reject
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </SectionCollapsible>
 
       {/* Active Users */}
-      <SectionCollapsible title={`✅ Active Users (${aktifUsers.length})`}>
+      <SectionCollapsible title={`User Aktif (${aktifUsers.length})`}>
         {aktifUsers.length === 0 ? (
-          <p className="text-slate-500 text-sm py-2">No active users</p>
+          <p className="text-sm text-slate-500 px-2">Tidak ada user aktif.</p>
         ) : (
-          aktifUsers.map((u) => (
-            <div
-              key={u.idUser}
-              className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm"
-            >
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-slate-800">
-                    ID: <span className="font-mono">{u.idUser}</span> | {u.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Role: <span className="font-semibold text-slate-700">{u.role}</span>
-                    {u.assignedRole && (
-                      <span className="ml-1 text-teal-600">({u.assignedRole})</span>
-                    )}
-                    {u.levelPartner && (
-                      <span className="ml-1 text-purple-600">Level: {u.levelPartner}</span>
-                    )}
-                  </p>
-                  {u.verifiedSkill && u.verifiedSkill.length > 0 && (
-                    <p className="text-xs text-slate-400">
-                      Skills: {u.verifiedSkill.join(", ")}
-                    </p>
-                  )}
-                  <StatusBadge status={u.status} />
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs h-7 px-3 border-red-300 text-red-600 hover:bg-red-50"
-                  onClick={() => suspendUser(u.idUser)}
-                >
-                  Suspend
-                </Button>
-              </div>
-            </div>
-          ))
+          <div className="space-y-2">
+            {aktifUsers.map((u) => (
+              <Card key={u.idUser} className="border-slate-200">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
+                        <User className="h-4 w-4 text-teal-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm text-slate-800">{u.name}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-xs text-slate-500">{u.idUser}</span>
+                          <Badge variant="outline" className="text-xs py-0">{u.role}</Badge>
+                          {u.assignedRole && (
+                            <Badge className="text-xs py-0 bg-teal-100 text-teal-700 border-teal-200">{u.assignedRole}</Badge>
+                          )}
+                          {u.levelPartner && (
+                            <Badge className="text-xs py-0 bg-purple-100 text-purple-700 border-purple-200">{u.levelPartner}</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={u.status} />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={() => suspendUser(u.idUser)}
+                      >
+                        Suspend
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </SectionCollapsible>
 
       {/* Suspended Users */}
-      <SectionCollapsible title={`🚫 Suspended Users (${suspendedUsers.length})`}>
+      <SectionCollapsible title={`User Suspended (${suspendedUsers.length})`}>
         {suspendedUsers.length === 0 ? (
-          <p className="text-slate-500 text-sm py-2">No suspended users</p>
+          <p className="text-sm text-slate-500 px-2">Tidak ada user suspended.</p>
         ) : (
-          suspendedUsers.map((u) => (
-            <div
-              key={u.idUser}
-              className="border border-red-100 p-3 rounded-lg mb-2 bg-red-50 shadow-sm"
-            >
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-slate-800">
-                    ID: <span className="font-mono">{u.idUser}</span> | {u.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Role: <span className="font-semibold text-slate-700">{u.role}</span>
-                  </p>
-                  <StatusBadge status={u.status} />
-                </div>
-                <Button
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-3"
-                  onClick={() => reactivateUser(u.idUser)}
-                >
-                  Reaktivasi
-                </Button>
-              </div>
-            </div>
-          ))
+          <div className="space-y-2">
+            {suspendedUsers.map((u) => (
+              <Card key={u.idUser} className="border-red-200 bg-red-50/30">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-medium text-sm text-slate-800">{u.name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-slate-500">{u.idUser}</span>
+                        <Badge variant="outline" className="text-xs py-0">{u.role}</Badge>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={u.status} />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                        onClick={() => reactivateUser(u.idUser)}
+                      >
+                        Reaktivasi
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </SectionCollapsible>
 
       {/* Tickets */}
-      <SectionCollapsible title={`🎫 Tiket (${tickets.length})`}>
+      <SectionCollapsible title={`Tiket (${tickets.length})`}>
         {tickets.length === 0 ? (
-          <p className="text-slate-500 text-sm py-2">No tickets</p>
+          <p className="text-sm text-slate-500 px-2">Tidak ada tiket.</p>
         ) : (
-          tickets.map((t) => (
-            <div key={t.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <div className="flex justify-between items-start">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-slate-800">ID: {t.id} | User: {t.userId}</p>
-                  <p className="text-xs text-slate-500">{t.notes}</p>
-                  <StatusBadge status={t.status} />
-                </div>
-              </div>
-            </div>
-          ))
+          <div className="space-y-2">
+            {tickets.map((t) => (
+              <Card key={t.id} className="border-slate-200">
+                <CardContent className="p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-slate-400 shrink-0" />
+                        <span className="font-medium text-sm text-slate-800">{t.id}</span>
+                        <span className="text-xs text-slate-500">— User: {t.userId}</span>
+                      </div>
+                      <p className="text-sm text-slate-600 mt-1">{t.notes}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <StatusBadge status={t.status} />
+                      {t.status !== "Selesai" && (
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs bg-amber-500 hover:bg-amber-600"
+                            onClick={() => setTicketModal({ open: true, mode: "progress", ticketId: t.id })}
+                          >
+                            Progress
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700"
+                            onClick={() => setTicketModal({ open: true, mode: "resolve", ticketId: t.id })}
+                          >
+                            Resolve
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </SectionCollapsible>
 
       {/* History */}
-      <SectionCollapsible title={`📋 History (${history.length})`}>
+      <SectionCollapsible title="History">
         {history.length === 0 ? (
-          <p className="text-slate-500 text-sm py-2">No history</p>
+          <p className="text-sm text-slate-500 px-2">Belum ada history.</p>
         ) : (
-          history.map((h) => (
-            <div key={h.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <p className="text-sm font-medium text-slate-800">{h.action}</p>
-              <p className="text-xs text-slate-500">User: {h.userId} | {h.tanggal}</p>
-            </div>
-          ))
+          <div className="space-y-2">
+            {history.map((h) => (
+              <div key={h.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-slate-700">{h.action}</p>
+                  <p className="text-xs text-slate-500">User: {h.userId}</p>
+                </div>
+                <span className="text-xs text-slate-400 shrink-0">{h.tanggal}</span>
+              </div>
+            ))}
+          </div>
         )}
       </SectionCollapsible>
+
+      {/* Ticket Action Modal */}
+      <TicketActionModal
+        open={ticketModal.open}
+        onClose={() => setTicketModal({ open: false, mode: "resolve", ticketId: "" })}
+        onConfirm={handleTicketAction}
+        mode={ticketModal.mode}
+        ticketId={ticketModal.ticketId}
+      />
+    </div>
+  );
+}
+
+// ─── AdminFinance Dashboard ───────────────────────────────────────────────────
+
+function AdminFinanceDashboard() {
+  const [withdrawRequests, setWithdrawRequests] = useState(mockWithdrawRequests);
+  const [perubahanData, setPerubahanData] = useState(mockPerubahanData);
+  const [financeTickets, setFinanceTickets] = useState(mockFinanceTickets);
+
+  // Aktivasi Layanan state
+  const [clients, setClients] = useState<Client[]>([]);
+  const [activeServices, setActiveServices] = useState<Service[]>([]);
+  const [serviceHistory, setServiceHistory] = useState<ServiceHistoryItem[]>([]);
+
+  // Autocomplete state for client search
+  const [clientSearch, setClientSearch] = useState("");
+  const [clientSuggestions, setClientSuggestions] = useState<ClientExtended[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<ClientExtended | null>(null);
+  const clientSearchRef = useRef<HTMLDivElement>(null);
+
+  const [activationForm, setActivationForm] = useState({
+    tipeLayanan: "" as Service["tipeLayanan"] | "",
+    unitAktif: "",
+    assignAsistenId: "",
+    tanggalMulai: "",
+  });
+  const [activating, setActivating] = useState(false);
+
+  // Ticket action modal state
+  const [ticketModal, setTicketModal] = useState<{ open: boolean; mode: "progress" | "resolve"; ticketId: string }>({
+    open: false,
+    mode: "resolve",
+    ticketId: "",
+  });
+
+  useEffect(() => {
+    fetchClients().then(setClients);
+    fetchActiveServices().then(setActiveServices);
+    fetchServiceHistory().then(setServiceHistory);
+  }, []);
+
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (clientSearchRef.current && !clientSearchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleClientSearchChange = (value: string) => {
+    setClientSearch(value);
+    setSelectedClient(null);
+    if (value.trim().length > 0) {
+      const q = value.toLowerCase();
+      const filtered = mockClientsExtended.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.idUser.toLowerCase().includes(q) ||
+          c.principalId.toLowerCase().includes(q)
+      );
+      setClientSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setClientSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectClient = (client: ClientExtended) => {
+    setSelectedClient(client);
+    setClientSearch(client.name);
+    setShowSuggestions(false);
+  };
+
+  const handleActivate = async () => {
+    if (!selectedClient || !activationForm.tipeLayanan || !activationForm.unitAktif) return;
+    setActivating(true);
+    const newService: Service = {
+      idService: `S${Date.now()}`,
+      clientId: selectedClient.idUser,
+      clientName: selectedClient.name,
+      tipeLayanan: activationForm.tipeLayanan as Service["tipeLayanan"],
+      unitAktif: parseInt(activationForm.unitAktif),
+      unitOnHold: 0,
+      assignAsistenId: activationForm.assignAsistenId,
+      tanggalMulai: activationForm.tanggalMulai,
+      sharing: [],
+    };
+    await activateService(newService);
+    setActiveServices((prev) => [...prev, newService]);
+    setActivationForm({ tipeLayanan: "", unitAktif: "", assignAsistenId: "", tanggalMulai: "" });
+    setSelectedClient(null);
+    setClientSearch("");
+    setActivating(false);
+  };
+
+  const approveWithdraw = (id: string) => {
+    setWithdrawRequests((prev) =>
+      prev.map((w) => (w.id === id ? { ...w, status: "Approved" } : w))
+    );
+  };
+
+  const rejectWithdraw = (id: string) => {
+    setWithdrawRequests((prev) =>
+      prev.map((w) => (w.id === id ? { ...w, status: "Rejected" } : w))
+    );
+  };
+
+  const approvePerubahan = (id: string) => {
+    setPerubahanData((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, status: "Approved" } : p))
+    );
+  };
+
+  const rejectPerubahan = (id: string) => {
+    setPerubahanData((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, status: "Rejected" } : p))
+    );
+  };
+
+  const handleTicketAction = (notes: string) => {
+    const { mode, ticketId } = ticketModal;
+    setFinanceTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? { ...t, status: mode === "progress" ? "Proses" : "Selesai" }
+          : t
+      )
+    );
+    setTicketModal({ open: false, mode: "resolve", ticketId: "" });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Summary */}
+      <SectionCollapsible title="Summary Keuangan" defaultOpen>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Card className="border-slate-200 shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="h-4 w-4 text-teal-600" />
+                <p className="text-xs text-slate-500">GMV Total</p>
+              </div>
+              <p className="text-lg font-bold text-slate-800">{mockFinanceSummary.gmvTotal}</p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <DollarSign className="h-4 w-4 text-emerald-600" />
+                <p className="text-xs text-slate-500">Margin</p>
+              </div>
+              <p className="text-lg font-bold text-emerald-700">{mockFinanceSummary.margin}</p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-200 shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Activity className="h-4 w-4 text-blue-600" />
+                <p className="text-xs text-slate-500">Layanan Aktif</p>
+              </div>
+              <p className="text-lg font-bold text-blue-700">{mockFinanceSummary.layananAktif}</p>
+            </CardContent>
+          </Card>
+          <Card className="border-amber-200 shadow-sm bg-amber-50">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <p className="text-xs text-amber-600">Pending Withdraw</p>
+              </div>
+              <p className="text-lg font-bold text-amber-700">{mockFinanceSummary.pendingWithdraw}</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* GMV per Tipe Layanan */}
+        <div className="mt-3">
+          <p className="text-xs font-semibold text-slate-600 mb-2">GMV per Tipe Layanan:</p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {[
+              { label: "Tenang", value: mockFinanceSummary.gmvTenang, color: "border-teal-200 bg-teal-50", textColor: "text-teal-700" },
+              { label: "Rapi", value: mockFinanceSummary.gmvRapi, color: "border-blue-200 bg-blue-50", textColor: "text-blue-700" },
+              { label: "Fokus", value: mockFinanceSummary.gmvFokus, color: "border-purple-200 bg-purple-50", textColor: "text-purple-700" },
+              { label: "Jaga", value: mockFinanceSummary.gmvJaga, color: "border-orange-200 bg-orange-50", textColor: "text-orange-700" },
+              { label: "Efisien", value: mockFinanceSummary.gmvEfisien, color: "border-emerald-200 bg-emerald-50", textColor: "text-emerald-700" },
+            ].map((item) => (
+              <Card key={item.label} className={`shadow-sm ${item.color}`}>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Layers className="h-3 w-3 text-slate-500" />
+                    <p className="text-xs text-slate-500">{item.label}</p>
+                  </div>
+                  <p className={`text-sm font-semibold ${item.textColor}`}>{item.value}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </SectionCollapsible>
+
+      {/* Aktivasi Layanan */}
+      <SectionCollapsible title="Aktivasi Layanan">
+        <Card className="border-slate-200">
+          <CardContent className="p-4 space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Client Autocomplete */}
+              <div className="space-y-1">
+                <Label className="text-xs">Client</Label>
+                <div className="relative" ref={clientSearchRef}>
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+                  <Input
+                    className="h-9 text-sm pl-8"
+                    placeholder="Cari nama, ID, atau principal..."
+                    value={clientSearch}
+                    onChange={(e) => handleClientSearchChange(e.target.value)}
+                    onFocus={() => {
+                      if (clientSuggestions.length > 0) setShowSuggestions(true);
+                    }}
+                  />
+                  {showSuggestions && clientSuggestions.length > 0 && (
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                      {clientSuggestions.map((c) => (
+                        <button
+                          key={c.idUser}
+                          type="button"
+                          className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0"
+                          onClick={() => handleSelectClient(c)}
+                        >
+                          <p className="text-sm font-medium text-slate-800">{c.name}</p>
+                          <p className="text-xs text-slate-500">{c.idUser} · <span className="font-mono">{c.principalId}</span></p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {showSuggestions && clientSuggestions.length === 0 && clientSearch.trim().length > 0 && (
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-md shadow-lg">
+                      <p className="text-sm text-slate-400 px-3 py-2">Tidak ada client ditemukan.</p>
+                    </div>
+                  )}
+                </div>
+                {selectedClient && (
+                  <p className="text-xs text-emerald-600 mt-1">✓ Dipilih: {selectedClient.name} ({selectedClient.idUser})</p>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-xs">Tipe Layanan</Label>
+                <Select
+                  value={activationForm.tipeLayanan}
+                  onValueChange={(val) => setActivationForm((prev) => ({ ...prev, tipeLayanan: val as Service["tipeLayanan"] }))}
+                >
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Pilih tipe..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["Tenang", "Rapi", "Fokus", "Jaga", "Efisien"].map((t) => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Unit Aktif</Label>
+                <Input
+                  type="number"
+                  className="h-9 text-sm"
+                  placeholder="Jumlah unit..."
+                  value={activationForm.unitAktif}
+                  onChange={(e) => setActivationForm((prev) => ({ ...prev, unitAktif: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Assign Asisten ID</Label>
+                <Input
+                  className="h-9 text-sm"
+                  placeholder="ID Asisten..."
+                  value={activationForm.assignAsistenId}
+                  onChange={(e) => setActivationForm((prev) => ({ ...prev, assignAsistenId: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Tanggal Mulai</Label>
+                <Input
+                  type="date"
+                  className="h-9 text-sm"
+                  value={activationForm.tanggalMulai}
+                  onChange={(e) => setActivationForm((prev) => ({ ...prev, tanggalMulai: e.target.value }))}
+                />
+              </div>
+            </div>
+            <Button
+              className="w-full md:w-auto bg-teal-600 hover:bg-teal-700"
+              onClick={handleActivate}
+              disabled={activating || !selectedClient || !activationForm.tipeLayanan || !activationForm.unitAktif}
+            >
+              {activating ? "Mengaktifkan..." : "Aktifkan Layanan"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {activeServices.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <p className="text-xs font-semibold text-slate-600 px-1">Layanan Aktif:</p>
+            {activeServices.map((s) => (
+              <Card key={s.idService} className="border-teal-200 bg-teal-50/30">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-sm text-slate-800">{s.clientName} — {s.tipeLayanan}</p>
+                      <p className="text-xs text-slate-500">ID: {s.idService} | Unit: {s.unitAktif} | Mulai: {s.tanggalMulai}</p>
+                    </div>
+                    <StatusBadge status="Aktif" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </SectionCollapsible>
+
+      {/* Withdraw Requests */}
+      <SectionCollapsible title={`Permintaan Withdraw (${withdrawRequests.filter(w => w.status === "Pending").length} pending)`}>
+        <div className="space-y-2">
+          {withdrawRequests.map((w) => (
+            <Card key={w.id} className="border-slate-200">
+              <CardContent className="p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-medium text-sm text-slate-800">{w.partner}</p>
+                    <p className="text-sm font-semibold text-teal-700">{w.amount}</p>
+                    <p className="text-xs text-slate-500">{w.bank} · {w.date}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <StatusBadge status={w.status} />
+                    {w.status === "Pending" && (
+                      <div className="flex gap-1">
+                        <Button size="sm" className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700" onClick={() => approveWithdraw(w.id)}>
+                          Accept
+                        </Button>
+                        <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => rejectWithdraw(w.id)}>
+                          Reject
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </SectionCollapsible>
+
+      {/* Perubahan Data Financial */}
+      <SectionCollapsible title={`Perubahan Data Financial (${perubahanData.filter(p => p.status === "Pending").length} pending)`}>
+        <div className="space-y-2">
+          {perubahanData.map((p) => (
+            <Card key={p.id} className="border-slate-200">
+              <CardContent className="p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-medium text-sm text-slate-800">{p.partner}</p>
+                    <p className="text-xs text-slate-500">Field: {p.field}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded">{p.lama}</span>
+                      <span className="text-xs text-slate-400">→</span>
+                      <span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded">{p.baru}</span>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1">{p.date}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <StatusBadge status={p.status} />
+                    {p.status === "Pending" && (
+                      <div className="flex gap-1">
+                        <Button size="sm" className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700" onClick={() => approvePerubahan(p.id)}>
+                          Accept
+                        </Button>
+                        <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => rejectPerubahan(p.id)}>
+                          Reject
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </SectionCollapsible>
+
+      {/* Finance Tickets */}
+      <SectionCollapsible title={`Tiket Finance (${financeTickets.length})`}>
+        <div className="space-y-2">
+          {financeTickets.map((t) => (
+            <Card key={t.id} className="border-slate-200">
+              <CardContent className="p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-slate-800">{t.subject}</p>
+                    <p className="text-xs text-slate-500">{t.user} · {t.date}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2 shrink-0">
+                    <StatusBadge status={t.status} />
+                    {t.status !== "Selesai" && (
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          className="h-7 text-xs bg-amber-500 hover:bg-amber-600"
+                          onClick={() => setTicketModal({ open: true, mode: "progress", ticketId: t.id })}
+                        >
+                          Progress
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700"
+                          onClick={() => setTicketModal({ open: true, mode: "resolve", ticketId: t.id })}
+                        >
+                          Resolve
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </SectionCollapsible>
+
+      {/* Service History */}
+      <SectionCollapsible title="History Layanan">
+        {serviceHistory.length === 0 ? (
+          <p className="text-sm text-slate-500 px-2">Belum ada history layanan.</p>
+        ) : (
+          <div className="space-y-2">
+            {serviceHistory.map((h) => (
+              <div key={h.idService} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-slate-700">{h.clientName} — {h.tipeLayanan}</p>
+                  <p className="text-xs text-slate-500">Unit: {h.unit}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={h.status} />
+                  <span className="text-xs text-slate-400">{h.tanggal}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionCollapsible>
+
+      {/* Ticket Action Modal */}
+      <TicketActionModal
+        open={ticketModal.open}
+        onClose={() => setTicketModal({ open: false, mode: "resolve", ticketId: "" })}
+        onConfirm={handleTicketAction}
+        mode={ticketModal.mode}
+        ticketId={ticketModal.ticketId}
+      />
     </div>
   );
 }
@@ -788,862 +1411,1039 @@ function AsistenmuDashboard() {
   const [tickets, setTickets] = useState<AsistenmuTicket[]>(mockAsistenmuTickets);
   const [history] = useState<AsistenmuHistoryItem[]>(mockAsistenmuHistory);
 
-  const [searchTask, setSearchTask] = useState<Record<string, string>>({});
-  const [searchTicket, setSearchTicket] = useState("");
-  const [searchHistory, setSearchHistory] = useState("");
+  // Ticket action modal state
+  const [ticketModal, setTicketModal] = useState<{ open: boolean; mode: "progress" | "resolve"; ticketId: string }>({
+    open: false,
+    mode: "resolve",
+    ticketId: "",
+  });
 
-  const [selectedTask, setSelectedTask] = useState<AsistenmuTask | null>(null);
+  // Delegation modal state — for "Delegasikan Ulang" (only partner field is editable)
+  const [delegasiModal, setDelegasiModal] = useState<{
+    open: boolean;
+    taskId: string;
+    task: AsistenmuTask | null;
+  }>({ open: false, taskId: "", task: null });
+  const [newPartnerId, setNewPartnerId] = useState("");
+  const [newPartnerName, setNewPartnerName] = useState("");
 
-  // Delegation modal fields
-  const [delegasiPartner, setDelegasiPartner] = useState("");
-  const [delegasiJam, setDelegasiJam] = useState("");
-  const [delegasiUnit, setDelegasiUnit] = useState("");
-  const [delegasiGDriveInternal, setDelegasiGDriveInternal] = useState("");
-  const [delegasiGDriveClient, setDelegasiGDriveClient] = useState("");
+  // Per-section filter state
+  const [filterPermintaan, setFilterPermintaan] = useState("");
+  const [filterQA, setFilterQA] = useState("");
+  const [filterRevisi, setFilterRevisi] = useState("");
+  const [filterDitolak, setFilterDitolak] = useState("");
+  const [filterReview, setFilterReview] = useState("");
+  const [filterSelesai, setFilterSelesai] = useState("");
 
-  const filterTask = (status: string) =>
+  const filterTasks = (statusList: string[], query: string) =>
     tasks.filter(
       (t) =>
-        t.status === status &&
-        (!searchTask[status] ||
-          t.id.toLowerCase().includes(searchTask[status].toLowerCase()) ||
-          t.clientName.toLowerCase().includes(searchTask[status].toLowerCase()))
+        statusList.includes(t.status) &&
+        (query === "" ||
+          t.id.toLowerCase().includes(query.toLowerCase()) ||
+          t.clientName.toLowerCase().includes(query.toLowerCase()) ||
+          (t.partnerName || "").toLowerCase().includes(query.toLowerCase()))
     );
 
-  const summaryCount = (status: string) => tasks.filter((t) => t.status === status).length;
-  const totalClient = [...new Set(tasks.map((t) => t.clientName))].length;
+  const permintaanBaru = filterTasks(["PermintaanBaru"], filterPermintaan);
+  const qaAsistenmu = filterTasks(["QAAsistenmu"], filterQA);
+  const revisiClient = filterTasks(["RevisiClient"], filterRevisi);
+  const ditolakPartner = filterTasks(["DitolakPartner"], filterDitolak);
+  const reviewClient = filterTasks(["ReviewClient"], filterReview);
+  const selesai = filterTasks(["Selesai"], filterSelesai);
 
-  const openDelegasiModal = (task: AsistenmuTask) => {
-    setSelectedTask(task);
-    setDelegasiPartner("");
-    setDelegasiJam("");
-    setDelegasiUnit("");
-    setDelegasiGDriveInternal("");
-    setDelegasiGDriveClient("");
+  const updateTaskStatus = (taskId: string, newStatus: string) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+    );
   };
 
-  const closeDelegasiModal = () => setSelectedTask(null);
-
-  const handleDelegasikan = () => {
-    if (!selectedTask) return;
-    setTasks((prev) =>
+  const handleTicketAction = (notes: string) => {
+    const { mode, ticketId } = ticketModal;
+    setTickets((prev) =>
       prev.map((t) =>
-        t.id === selectedTask.id
-          ? { ...t, partnerName: delegasiPartner, unitUsed: Number(delegasiUnit), status: "OnProgress" }
+        t.id === ticketId
+          ? { ...t, status: mode === "progress" ? "Proses" : "Resolved" }
           : t
       )
     );
-    closeDelegasiModal();
+    setTicketModal({ open: false, mode: "resolve", ticketId: "" });
   };
 
-  const handleKirimReviewKeClient = (taskId: string) => {
+  const openDelegasiUlang = (task: AsistenmuTask) => {
+    setDelegasiModal({ open: true, taskId: task.id, task });
+    setNewPartnerId(task.partnerId || "");
+    setNewPartnerName(task.partnerName || "");
+  };
+
+  const handleDelegasiUlang = () => {
+    if (!newPartnerName.trim()) return;
     setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: "ReviewClient" } : t))
+      prev.map((t) =>
+        t.id === delegasiModal.taskId
+          ? { ...t, partnerId: newPartnerId, partnerName: newPartnerName, status: "QAAsistenmu" }
+          : t
+      )
     );
+    setDelegasiModal({ open: false, taskId: "", task: null });
+    setNewPartnerId("");
+    setNewPartnerName("");
   };
 
-  const handleKirimRevisiKePartner = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: "OnProgress" } : t))
-    );
+  // Original delegation modal state (for new tasks)
+  const [newDelegasiModal, setNewDelegasiModal] = useState<{ open: boolean; taskId: string }>({ open: false, taskId: "" });
+  const [delegasiForm, setDelegasiForm] = useState({
+    partnerId: "",
+    partnerName: "",
+    deadline: "",
+    instruksi: "",
+    unitEstimasi: "",
+  });
+
+  const handleDelegasi = () => {
+    updateTaskStatus(newDelegasiModal.taskId, "QAAsistenmu");
+    setNewDelegasiModal({ open: false, taskId: "" });
+    setDelegasiForm({ partnerId: "", partnerName: "", deadline: "", instruksi: "", unitEstimasi: "" });
   };
 
-  const handleSelesaikanTask = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: "Selesai" } : t))
-    );
-  };
-
-  const handleResolveTicket = (ticketId: string) => {
-    setTickets((prev) =>
-      prev.map((t) => (t.id === ticketId ? { ...t, status: "Resolved" } : t))
-    );
-  };
-
-  const taskSections = [
-    { title: "Permintaan Baru", status: "PermintaanBaru", type: "new" },
-    { title: "Permintaan QA Asistenmu", status: "QAAsistenmu", type: "qa" },
-    { title: "Permintaan Revisi Client", status: "RevisiClient", type: "revisi" },
-    { title: "Task Ditolak Partner", status: "DitolakPartner", type: "reject" },
-    { title: "Task Dalam Review Client", status: "ReviewClient", type: "review" },
-    { title: "Task Selesai", status: "Selesai", type: "done" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="border-slate-200 shadow-sm">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-slate-500 mb-1">List Client</p>
-            <p className="text-2xl font-bold text-slate-800">{totalClient}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 shadow-sm">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-slate-500 mb-1">Total Task</p>
-            <p className="text-2xl font-bold text-slate-800">{tasks.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-blue-200 shadow-sm bg-blue-50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-blue-600 mb-1">Permintaan Baru</p>
-            <p className="text-2xl font-bold text-blue-700">{summaryCount("PermintaanBaru")}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-amber-200 shadow-sm bg-amber-50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-amber-600 mb-1">Permintaan QA</p>
-            <p className="text-2xl font-bold text-amber-700">{summaryCount("QAAsistenmu")}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-orange-200 shadow-sm bg-orange-50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-orange-600 mb-1">Revisi Client</p>
-            <p className="text-2xl font-bold text-orange-700">{summaryCount("RevisiClient")}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-red-200 shadow-sm bg-red-50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-red-600 mb-1">Ditolak Partner</p>
-            <p className="text-2xl font-bold text-red-700">{summaryCount("DitolakPartner")}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-purple-200 shadow-sm bg-purple-50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-purple-600 mb-1">Review Client</p>
-            <p className="text-2xl font-bold text-purple-700">{summaryCount("ReviewClient")}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-emerald-200 shadow-sm bg-emerald-50">
-          <CardContent className="p-3 text-center">
-            <p className="text-xs text-emerald-600 mb-1">Selesai</p>
-            <p className="text-2xl font-bold text-emerald-700">{summaryCount("Selesai")}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Task Sections */}
-      {taskSections.map((section) => {
-        const list = filterTask(section.status);
-        return (
-          <SectionCollapsible
-            key={section.status}
-            title={`${section.title} (${list.length})`}
-            defaultOpen={section.type === "new"}
-          >
-            <Input
-              placeholder="Filter by ID / Client"
-              value={searchTask[section.status] || ""}
-              onChange={(e) =>
-                setSearchTask((prev) => ({ ...prev, [section.status]: e.target.value }))
-              }
-              className="mb-3 text-sm"
-            />
-
-            {list.length === 0 ? (
-              <p className="text-slate-500 text-sm py-2">Tidak ada task</p>
-            ) : (
-              list.map((task) => (
-                <div
-                  key={task.id}
-                  className="border border-slate-200 p-3 rounded-lg mb-3 bg-white shadow-sm space-y-1"
-                >
-                  <p className="text-sm font-semibold text-slate-800">ID: {task.id}</p>
-                  <p className="text-xs text-slate-600">Client: {task.clientName}</p>
-                  <p className="text-xs text-slate-600">Partner: {task.partnerName || "-"}</p>
-                  <p className="text-xs text-slate-600">Layanan: {task.serviceType}</p>
-                  <p className="text-xs text-slate-600">Unit: {task.unitUsed ?? "-"}</p>
-
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {section.type === "new" && (
-                      <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7 px-3"
-                        onClick={() => openDelegasiModal(task)}
-                      >
-                        Delegasikan Task
-                      </Button>
-                    )}
-
-                    {section.type === "qa" && (
-                      <Button
-                        size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-3"
-                        onClick={() => handleKirimReviewKeClient(task.id)}
-                      >
-                        Kirim Review ke Client
-                      </Button>
-                    )}
-
-                    {section.type === "revisi" && (
-                      <>
-                        <Button
-                          size="sm"
-                          className="bg-orange-600 hover:bg-orange-700 text-white text-xs h-7 px-3"
-                          onClick={() => handleKirimRevisiKePartner(task.id)}
-                        >
-                          Kirimkan Revisi ke Partner
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs h-7 px-3"
-                          onClick={() => handleSelesaikanTask(task.id)}
-                        >
-                          Selesaikan Task
-                        </Button>
-                      </>
-                    )}
-
-                    {section.type === "reject" && (
-                      <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7 px-3"
-                        onClick={() => openDelegasiModal(task)}
-                      >
-                        Delegasikan Ulang
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </SectionCollapsible>
-        );
-      })}
-
-      {/* Delegation Modal */}
-      {selectedTask && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 w-full max-w-md rounded-lg shadow-xl space-y-3 mx-4">
-            <p className="font-bold text-lg text-slate-800">
-              Delegasikan Task – {selectedTask.id}
-            </p>
-            <p className="text-xs text-slate-500">Client: {selectedTask.clientName} | Layanan: {selectedTask.serviceType}</p>
-
-            <Input
-              placeholder="Partner (id / principalId / nama / skill)"
-              value={delegasiPartner}
-              onChange={(e) => setDelegasiPartner(e.target.value)}
-              className="text-sm"
-            />
-            <Input
-              placeholder="Jam Efektif"
-              type="number"
-              value={delegasiJam}
-              onChange={(e) => setDelegasiJam(e.target.value)}
-              className="text-sm"
-            />
-            <Input
-              placeholder="Unit Layanan Terpakai"
-              type="number"
-              value={delegasiUnit}
-              onChange={(e) => setDelegasiUnit(e.target.value)}
-              className="text-sm"
-            />
-            <Input
-              placeholder="Link GDrive Internal"
-              value={delegasiGDriveInternal}
-              onChange={(e) => setDelegasiGDriveInternal(e.target.value)}
-              className="text-sm"
-            />
-            <Input
-              placeholder="Link GDrive Client"
-              value={delegasiGDriveClient}
-              onChange={(e) => setDelegasiGDriveClient(e.target.value)}
-              className="text-sm"
-            />
-
-            <div className="flex justify-between pt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={closeDelegasiModal}
-                className="text-slate-600"
-              >
-                Batal
-              </Button>
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={handleDelegasikan}
-              >
-                Delegasikan
-              </Button>
+  const TaskCard = ({ task, actions }: { task: AsistenmuTask; actions: React.ReactNode }) => (
+    <Card className="border-slate-200">
+      <CardContent className="p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs text-slate-500">{task.id}</span>
+              <StatusBadge status={task.status} />
+            </div>
+            <p className="font-medium text-sm text-slate-800 mt-1">{task.clientName}</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs text-slate-500">Layanan: {task.serviceType}</span>
+              {task.partnerName && <span className="text-xs text-slate-500">· Partner: {task.partnerName}</span>}
+              {task.unitUsed !== undefined && <span className="text-xs text-slate-500">· Unit: {task.unitUsed}</span>}
             </div>
           </div>
+          <div className="flex flex-col gap-1 shrink-0">{actions}</div>
         </div>
-      )}
-
-      {/* Tiket */}
-      <SectionCollapsible title={`🎫 Tiket (${tickets.length})`}>
-        <Input
-          placeholder="Filter tiket"
-          value={searchTicket}
-          onChange={(e) => setSearchTicket(e.target.value)}
-          className="mb-3 text-sm"
-        />
-        {tickets
-          .filter(
-            (t) =>
-              !searchTicket ||
-              t.id.toLowerCase().includes(searchTicket.toLowerCase()) ||
-              t.notes.toLowerCase().includes(searchTicket.toLowerCase())
-          )
-          .map((t) => (
-            <div key={t.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <div className="flex justify-between items-start">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-slate-800">ID: {t.id}</p>
-                  <p className="text-xs text-slate-500">{t.notes}</p>
-                  <StatusBadge status={t.status} />
-                </div>
-                {t.status !== "Resolved" && (
-                  <Button
-                    size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-3 ml-2"
-                    onClick={() => handleResolveTicket(t.id)}
-                  >
-                    Resolve
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
-      </SectionCollapsible>
-
-      {/* History */}
-      <SectionCollapsible title={`📋 History (${history.length})`}>
-        <Input
-          placeholder="Filter history"
-          value={searchHistory}
-          onChange={(e) => setSearchHistory(e.target.value)}
-          className="mb-3 text-sm"
-        />
-        {history
-          .filter(
-            (h) =>
-              !searchHistory ||
-              h.taskId.toLowerCase().includes(searchHistory.toLowerCase()) ||
-              h.action.toLowerCase().includes(searchHistory.toLowerCase())
-          )
-          .map((h) => (
-            <div key={h.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <p className="text-sm font-medium text-slate-800">Task: {h.taskId}</p>
-              <p className="text-xs text-slate-500">Action: {h.action}</p>
-              <p className="text-xs text-slate-400">Date: {h.date}</p>
-            </div>
-          ))}
-      </SectionCollapsible>
-    </div>
+      </CardContent>
+    </Card>
   );
-}
-
-// ─── AdminFinance Dashboard ───────────────────────────────────────────────────
-
-function AdminFinanceDashboard() {
-  const [withdrawRequests, setWithdrawRequests] = useState(mockWithdrawRequests);
-  const [perubahanData, setPerubahanData] = useState(mockPerubahanData);
-  const [financeTickets] = useState(mockFinanceTickets);
-
-  // Aktivasi Layanan state
-  const [clients, setClients] = useState<Client[]>([]);
-  const [activeServices, setActiveServices] = useState<Service[]>([]);
-  const [serviceHistory, setServiceHistory] = useState<ServiceHistoryItem[]>([]);
-
-  const [selectedClientId, setSelectedClientId] = useState("");
-  const [selectedTipe, setSelectedTipe] = useState<Service["tipeLayanan"] | "">("");
-  const [unitInput, setUnitInput] = useState("");
-  const [assignAsistenId, setAssignAsistenId] = useState("");
-  const [tanggalMulai, setTanggalMulai] = useState("");
-  const [sharingInput, setSharingInput] = useState("");
-
-  const [topupServiceId, setTopupServiceId] = useState("");
-  const [topupUnit, setTopupUnit] = useState("");
-
-  const [searchLayanan, setSearchLayanan] = useState<Record<string, string>>({});
-  const [searchWithdraw, setSearchWithdraw] = useState("");
-  const [searchPerubahan, setSearchPerubahan] = useState("");
-  const [searchFinanceTicket, setSearchFinanceTicket] = useState("");
-
-  useEffect(() => {
-    fetchClients().then(setClients);
-    fetchActiveServices().then(setActiveServices);
-    fetchServiceHistory().then(setServiceHistory);
-  }, []);
-
-  const handleActivateService = async () => {
-    if (!selectedClientId || !selectedTipe || !unitInput || !assignAsistenId || !tanggalMulai) return;
-    const client = clients.find((c) => c.idUser === selectedClientId);
-    if (!client) return;
-    const sharingList = sharingInput
-      ? sharingInput.split(",").map((s, i) => ({ idUser: `SH${i}`, name: s.trim() }))
-      : [];
-    const newService: Service = {
-      idService: `S${Date.now()}`,
-      clientId: selectedClientId,
-      clientName: client.name,
-      tipeLayanan: selectedTipe as Service["tipeLayanan"],
-      unitAktif: Number(unitInput),
-      unitOnHold: 0,
-      assignAsistenId,
-      tanggalMulai,
-      sharing: sharingList,
-    };
-    const ok = await activateService(newService);
-    if (ok) {
-      setActiveServices((prev) => [...prev, newService]);
-      setServiceHistory((prev) => [
-        ...prev,
-        {
-          idService: newService.idService,
-          clientName: client.name,
-          tipeLayanan: selectedTipe,
-          unit: Number(unitInput),
-          tanggal: tanggalMulai,
-          status: "Aktif",
-        },
-      ]);
-      setSelectedClientId("");
-      setSelectedTipe("");
-      setUnitInput("");
-      setAssignAsistenId("");
-      setTanggalMulai("");
-      setSharingInput("");
-    }
-  };
-
-  const handleTopup = async () => {
-    if (!topupServiceId || !topupUnit) return;
-    const ok = await topupService(topupServiceId, Number(topupUnit));
-    if (ok) {
-      setActiveServices((prev) =>
-        prev.map((s) =>
-          s.idService === topupServiceId
-            ? { ...s, unitAktif: s.unitAktif + Number(topupUnit) }
-            : s
-        )
-      );
-      setTopupServiceId("");
-      setTopupUnit("");
-    }
-  };
-
-  const handleWithdrawAction = (id: string, action: "Approved" | "Rejected") => {
-    setWithdrawRequests((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, status: action } : w))
-    );
-  };
-
-  const handlePerubahanAction = (id: string, action: "Approved" | "Rejected") => {
-    setPerubahanData((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: action } : p))
-    );
-  };
-
-  // Group active services by tipeLayanan
-  const servicesByType = activeServices.reduce<Record<string, Service[]>>((acc, s) => {
-    if (!acc[s.tipeLayanan]) acc[s.tipeLayanan] = [];
-    acc[s.tipeLayanan].push(s);
-    return acc;
-  }, {});
 
   return (
     <div className="space-y-4">
       {/* Summary */}
-      <SectionCollapsible title="📊 Summary" defaultOpen>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="border-slate-200 shadow-sm">
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        {[
+          { label: "Permintaan Baru", count: tasks.filter(t => t.status === "PermintaanBaru").length, color: "text-blue-700", bg: "bg-blue-50 border-blue-200" },
+          { label: "QA Asistenmu", count: tasks.filter(t => t.status === "QAAsistenmu").length, color: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
+          { label: "Revisi Client", count: tasks.filter(t => t.status === "RevisiClient").length, color: "text-orange-700", bg: "bg-orange-50 border-orange-200" },
+          { label: "Ditolak Partner", count: tasks.filter(t => t.status === "DitolakPartner").length, color: "text-red-700", bg: "bg-red-50 border-red-200" },
+          { label: "Review Client", count: tasks.filter(t => t.status === "ReviewClient").length, color: "text-purple-700", bg: "bg-purple-50 border-purple-200" },
+          { label: "Selesai", count: tasks.filter(t => t.status === "Selesai").length, color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+        ].map((s) => (
+          <Card key={s.label} className={`shadow-sm ${s.bg}`}>
             <CardContent className="p-3 text-center">
-              <p className="text-xs text-slate-500 mb-1">GMV Total</p>
-              <p className="text-lg font-bold text-slate-800">{mockFinanceSummary.gmvTotal}</p>
+              <p className={`text-xs mb-1 ${s.color}`}>{s.label}</p>
+              <p className={`text-2xl font-bold ${s.color}`}>{s.count}</p>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 shadow-sm">
-            <CardContent className="p-3 text-center">
-              <p className="text-xs text-slate-500 mb-1">GMV Concierge</p>
-              <p className="text-lg font-bold text-slate-800">{mockFinanceSummary.gmvConcierge}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-slate-200 shadow-sm">
-            <CardContent className="p-3 text-center">
-              <p className="text-xs text-slate-500 mb-1">GMV Virtual</p>
-              <p className="text-lg font-bold text-slate-800">{mockFinanceSummary.gmvVirtual}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-emerald-200 shadow-sm bg-emerald-50">
-            <CardContent className="p-3 text-center">
-              <p className="text-xs text-emerald-600 mb-1">Margin</p>
-              <p className="text-lg font-bold text-emerald-700">{mockFinanceSummary.margin}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-blue-200 shadow-sm bg-blue-50">
-            <CardContent className="p-3 text-center">
-              <p className="text-xs text-blue-600 mb-1">Layanan Aktif</p>
-              <p className="text-2xl font-bold text-blue-700">{mockFinanceSummary.layananAktif}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-amber-200 shadow-sm bg-amber-50">
-            <CardContent className="p-3 text-center">
-              <p className="text-xs text-amber-600 mb-1">Pending Withdraw</p>
-              <p className="text-2xl font-bold text-amber-700">{mockFinanceSummary.pendingWithdraw}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-orange-200 shadow-sm bg-orange-50">
-            <CardContent className="p-3 text-center">
-              <p className="text-xs text-orange-600 mb-1">Pending Perubahan</p>
-              <p className="text-2xl font-bold text-orange-700">{mockFinanceSummary.pendingPerubahan}</p>
-            </CardContent>
-          </Card>
-        </div>
-      </SectionCollapsible>
-
-      {/* Aktivasi Layanan */}
-      <SectionCollapsible title="⚡ Aktivasi Layanan">
-        <div className="space-y-3 p-1">
-          <div>
-            <Label className="text-xs text-slate-600 mb-1 block">Client</Label>
-            <Select value={selectedClientId} onValueChange={setSelectedClientId}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue placeholder="Pilih Client" />
-              </SelectTrigger>
-              <SelectContent>
-                {clients.map((c) => (
-                  <SelectItem key={c.idUser} value={c.idUser}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-xs text-slate-600 mb-1 block">Tipe Layanan</Label>
-            <Select value={selectedTipe} onValueChange={(v) => setSelectedTipe(v as Service["tipeLayanan"])}>
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue placeholder="Pilih Tipe" />
-              </SelectTrigger>
-              <SelectContent>
-                {["Tenang", "Rapi", "Fokus", "Jaga", "Efisien"].map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Input
-            placeholder="Unit Aktif"
-            type="number"
-            value={unitInput}
-            onChange={(e) => setUnitInput(e.target.value)}
-            className="text-sm"
-          />
-          <Input
-            placeholder="Assign Asisten ID"
-            value={assignAsistenId}
-            onChange={(e) => setAssignAsistenId(e.target.value)}
-            className="text-sm"
-          />
-          <Input
-            placeholder="Tanggal Mulai (YYYY-MM-DD)"
-            value={tanggalMulai}
-            onChange={(e) => setTanggalMulai(e.target.value)}
-            className="text-sm"
-          />
-          <Input
-            placeholder="Sharing (nama, pisahkan koma)"
-            value={sharingInput}
-            onChange={(e) => setSharingInput(e.target.value)}
-            className="text-sm"
-          />
-          <Button
-            size="sm"
-            className="bg-teal-600 hover:bg-teal-700 text-white"
-            onClick={handleActivateService}
-          >
-            Aktifkan Layanan
-          </Button>
-
-          <div className="border-t pt-3 mt-3">
-            <p className="text-xs font-semibold text-slate-600 mb-2">Top-up Unit</p>
-            <div className="flex gap-2">
-              <Input
-                placeholder="ID Layanan"
-                value={topupServiceId}
-                onChange={(e) => setTopupServiceId(e.target.value)}
-                className="text-sm"
-              />
-              <Input
-                placeholder="Tambahan Unit"
-                type="number"
-                value={topupUnit}
-                onChange={(e) => setTopupUnit(e.target.value)}
-                className="text-sm"
-              />
-              <Button size="sm" variant="outline" onClick={handleTopup}>
-                Top-up
-              </Button>
-            </div>
-          </div>
-        </div>
-      </SectionCollapsible>
-
-      {/* Layanan Aktif */}
-      <SectionCollapsible title={`📋 Layanan Aktif (${activeServices.length})`}>
-        {Object.entries(servicesByType).map(([tipe, services]) => (
-          <div key={tipe} className="mb-4">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{tipe}</p>
-            <div className="relative mb-2">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-              <Input
-                placeholder={`Filter ${tipe}`}
-                value={searchLayanan[tipe] || ""}
-                onChange={(e) => setSearchLayanan((prev) => ({ ...prev, [tipe]: e.target.value }))}
-                className="pl-7 h-7 text-xs"
-              />
-            </div>
-            {services
-              .filter(
-                (s) =>
-                  !searchLayanan[tipe] ||
-                  s.idService.toLowerCase().includes(searchLayanan[tipe].toLowerCase()) ||
-                  s.clientName.toLowerCase().includes(searchLayanan[tipe].toLowerCase())
-              )
-              .map((s) => (
-                <div key={s.idService} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-                  <p className="text-sm font-medium text-slate-800">
-                    {s.idService} – {s.clientName}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Unit Aktif: {s.unitAktif} | On Hold: {s.unitOnHold}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Asisten: {s.assignAsistenId} | Mulai: {s.tanggalMulai}
-                  </p>
-                  {s.sharing.length > 0 && (
-                    <p className="text-xs text-slate-400">
-                      Sharing: {s.sharing.map((sh) => sh.name).join(", ")}
-                    </p>
-                  )}
-                </div>
-              ))}
-          </div>
         ))}
+      </div>
+
+      {/* Client Terkait */}
+      <SectionCollapsible title="Client Terkait" defaultOpen>
+        <div className="rounded-md border border-slate-200 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50">
+                <TableHead className="text-xs font-semibold text-slate-600 py-2">ID Layanan</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-600 py-2">Tipe Layanan</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-600 py-2">Nama Client</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-600 py-2">Status Layanan</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-600 py-2">Unit Aktif</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-600 py-2">Share Layanan</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mockAsistenmuClientLayanan.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-sm text-slate-400 py-4">
+                    Tidak ada data client terkait.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                mockAsistenmuClientLayanan.map((c) => (
+                  <TableRow key={c.idLayanan} className="hover:bg-slate-50">
+                    <TableCell className="text-xs font-mono py-2">{c.idLayanan}</TableCell>
+                    <TableCell className="text-xs py-2">{c.tipeLayanan}</TableCell>
+                    <TableCell className="text-xs py-2">{c.namaClient}</TableCell>
+                    <TableCell className="text-xs py-2">
+                      <StatusBadge status={c.statusLayanan} />
+                    </TableCell>
+                    <TableCell className="text-xs py-2">{c.unitAktif}</TableCell>
+                    <TableCell className="text-xs py-2">{c.shareLayanan}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </SectionCollapsible>
 
-      {/* Permintaan Withdraw */}
-      <SectionCollapsible title={`💸 Permintaan Withdraw Partner (${withdrawRequests.filter((w) => w.status === "Pending").length} pending)`}>
-        <div className="relative mb-3">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-          <Input
-            placeholder="Filter withdraw"
-            value={searchWithdraw}
-            onChange={(e) => setSearchWithdraw(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
-        </div>
-        {withdrawRequests
-          .filter(
-            (w) =>
-              !searchWithdraw ||
-              w.partner.toLowerCase().includes(searchWithdraw.toLowerCase()) ||
-              w.id.toLowerCase().includes(searchWithdraw.toLowerCase())
-          )
-          .map((w) => (
-            <div key={w.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <div className="flex justify-between items-start">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-slate-800">
-                    {w.id} – {w.partner}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {w.amount} | {w.bank}
-                  </p>
-                  <p className="text-xs text-slate-400">{w.date}</p>
-                  <StatusBadge status={w.status} />
-                </div>
-                {w.status === "Pending" && (
-                  <div className="flex gap-1 ml-2">
-                    <Button
-                      size="sm"
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-2"
-                      onClick={() => handleWithdrawAction(w.id, "Approved")}
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="text-xs h-7 px-2"
-                      onClick={() => handleWithdrawAction(w.id, "Rejected")}
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                )}
+      {/* Task Management Section */}
+      <SectionCollapsible title="Task Management" defaultOpen>
+        <div className="space-y-4">
+          {/* Permintaan Baru */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-4 bg-blue-500 rounded" />
+              <p className="text-xs font-semibold text-slate-700">Permintaan Baru ({permintaanBaru.length})</p>
+            </div>
+            <Input
+              placeholder="Filter task..."
+              value={filterPermintaan}
+              onChange={(e) => setFilterPermintaan(e.target.value)}
+              className="mb-2 h-8 text-sm"
+            />
+            {permintaanBaru.length === 0 ? (
+              <p className="text-sm text-slate-500 px-2">Tidak ada permintaan baru.</p>
+            ) : (
+              <div className="space-y-2">
+                {permintaanBaru.map((t) => (
+                  <TaskCard
+                    key={t.id}
+                    task={t}
+                    actions={
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-teal-600 hover:bg-teal-700"
+                        onClick={() => setNewDelegasiModal({ open: true, taskId: t.id })}
+                      >
+                        Delegasikan Task
+                      </Button>
+                    }
+                  />
+                ))}
               </div>
-            </div>
-          ))}
-      </SectionCollapsible>
+            )}
+          </div>
 
-      {/* Permintaan Perubahan Data Financial */}
-      <SectionCollapsible title={`🔄 Permintaan Perubahan Data Financial (${perubahanData.filter((p) => p.status === "Pending").length} pending)`}>
-        <div className="relative mb-3">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-          <Input
-            placeholder="Filter perubahan"
-            value={searchPerubahan}
-            onChange={(e) => setSearchPerubahan(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
-        </div>
-        {perubahanData
-          .filter(
-            (p) =>
-              !searchPerubahan ||
-              p.partner.toLowerCase().includes(searchPerubahan.toLowerCase()) ||
-              p.id.toLowerCase().includes(searchPerubahan.toLowerCase())
-          )
-          .map((p) => (
-            <div key={p.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <div className="flex justify-between items-start">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-slate-800">
-                    {p.id} – {p.partner}
-                  </p>
-                  <p className="text-xs text-slate-500">Field: {p.field}</p>
-                  <p className="text-xs text-slate-500">
-                    Lama: <span className="line-through text-red-400">{p.lama}</span>
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Baru: <span className="text-emerald-600 font-medium">{p.baru}</span>
-                  </p>
-                  <p className="text-xs text-slate-400">{p.date}</p>
-                  <StatusBadge status={p.status} />
-                </div>
-                {p.status === "Pending" && (
-                  <div className="flex gap-1 ml-2">
-                    <Button
-                      size="sm"
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-2"
-                      onClick={() => handlePerubahanAction(p.id, "Approved")}
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="text-xs h-7 px-2"
-                      onClick={() => handlePerubahanAction(p.id, "Rejected")}
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                )}
+          {/* QA Asistenmu */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-4 bg-amber-500 rounded" />
+              <p className="text-xs font-semibold text-slate-700">QA Asistenmu ({qaAsistenmu.length})</p>
+            </div>
+            <Input
+              placeholder="Filter task..."
+              value={filterQA}
+              onChange={(e) => setFilterQA(e.target.value)}
+              className="mb-2 h-8 text-sm"
+            />
+            {qaAsistenmu.length === 0 ? (
+              <p className="text-sm text-slate-500 px-2">Tidak ada task dalam QA.</p>
+            ) : (
+              <div className="space-y-2">
+                {qaAsistenmu.map((t) => (
+                  <TaskCard
+                    key={t.id}
+                    task={t}
+                    actions={
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                        onClick={() => updateTaskStatus(t.id, "ReviewClient")}
+                      >
+                        Kirim Review ke Client
+                      </Button>
+                    }
+                  />
+                ))}
               </div>
+            )}
+          </div>
+
+          {/* Revisi Client */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-4 bg-orange-500 rounded" />
+              <p className="text-xs font-semibold text-slate-700">Revisi Client ({revisiClient.length})</p>
             </div>
-          ))}
+            <Input
+              placeholder="Filter task..."
+              value={filterRevisi}
+              onChange={(e) => setFilterRevisi(e.target.value)}
+              className="mb-2 h-8 text-sm"
+            />
+            {revisiClient.length === 0 ? (
+              <p className="text-sm text-slate-500 px-2">Tidak ada task revisi.</p>
+            ) : (
+              <div className="space-y-2">
+                {revisiClient.map((t) => (
+                  <TaskCard
+                    key={t.id}
+                    task={t}
+                    actions={
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-orange-600 hover:bg-orange-700"
+                        onClick={() => updateTaskStatus(t.id, "QAAsistenmu")}
+                      >
+                        Kirimkan Revisi ke Partner
+                      </Button>
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Ditolak Partner */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-4 bg-red-500 rounded" />
+              <p className="text-xs font-semibold text-slate-700">Ditolak Partner ({ditolakPartner.length})</p>
+            </div>
+            <Input
+              placeholder="Filter task..."
+              value={filterDitolak}
+              onChange={(e) => setFilterDitolak(e.target.value)}
+              className="mb-2 h-8 text-sm"
+            />
+            {ditolakPartner.length === 0 ? (
+              <p className="text-sm text-slate-500 px-2">Tidak ada task ditolak.</p>
+            ) : (
+              <div className="space-y-2">
+                {ditolakPartner.map((t) => (
+                  <TaskCard
+                    key={t.id}
+                    task={t}
+                    actions={
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-red-600 hover:bg-red-700"
+                        onClick={() => openDelegasiUlang(t)}
+                      >
+                        Delegasikan Ulang
+                      </Button>
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Review Client */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-4 bg-purple-500 rounded" />
+              <p className="text-xs font-semibold text-slate-700">Review Client ({reviewClient.length})</p>
+            </div>
+            <Input
+              placeholder="Filter task..."
+              value={filterReview}
+              onChange={(e) => setFilterReview(e.target.value)}
+              className="mb-2 h-8 text-sm"
+            />
+            {reviewClient.length === 0 ? (
+              <p className="text-sm text-slate-500 px-2">Tidak ada task dalam review.</p>
+            ) : (
+              <div className="space-y-2">
+                {reviewClient.map((t) => (
+                  <TaskCard
+                    key={t.id}
+                    task={t}
+                    actions={
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700"
+                        onClick={() => updateTaskStatus(t.id, "Selesai")}
+                      >
+                        Selesaikan Task
+                      </Button>
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Selesai */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1 w-4 bg-emerald-500 rounded" />
+              <p className="text-xs font-semibold text-slate-700">Selesai ({selesai.length})</p>
+            </div>
+            <Input
+              placeholder="Filter task..."
+              value={filterSelesai}
+              onChange={(e) => setFilterSelesai(e.target.value)}
+              className="mb-2 h-8 text-sm"
+            />
+            {selesai.length === 0 ? (
+              <p className="text-sm text-slate-500 px-2">Belum ada task selesai.</p>
+            ) : (
+              <div className="space-y-2">
+                {selesai.map((t) => (
+                  <TaskCard key={t.id} task={t} actions={null} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </SectionCollapsible>
 
-      {/* Tiket Finance */}
-      <SectionCollapsible title={`🎫 Tiket (${financeTickets.length})`}>
-        <div className="relative mb-3">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
-          <Input
-            placeholder="Filter tiket"
-            value={searchFinanceTicket}
-            onChange={(e) => setSearchFinanceTicket(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
-        </div>
-        {financeTickets
-          .filter(
-            (t) =>
-              !searchFinanceTicket ||
-              t.id.toLowerCase().includes(searchFinanceTicket.toLowerCase()) ||
-              t.user.toLowerCase().includes(searchFinanceTicket.toLowerCase()) ||
-              t.subject.toLowerCase().includes(searchFinanceTicket.toLowerCase())
-          )
-          .map((t) => (
-            <div key={t.id} className="border border-slate-200 p-3 rounded-lg mb-2 bg-white shadow-sm">
-              <p className="text-sm font-medium text-slate-800">
-                {t.id} – {t.user}
-              </p>
-              <p className="text-xs text-slate-500">{t.subject}</p>
-              <p className="text-xs text-slate-400">{t.date}</p>
-              <StatusBadge status={t.status} />
-            </div>
-          ))}
+      {/* Tiket */}
+      <SectionCollapsible title={`Tiket (${tickets.length})`}>
+        {tickets.length === 0 ? (
+          <p className="text-sm text-slate-500 px-2">Tidak ada tiket.</p>
+        ) : (
+          <div className="space-y-2">
+            {tickets.map((t) => (
+              <Card key={t.id} className="border-slate-200">
+                <CardContent className="p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <span className="font-mono text-xs text-slate-500">{t.id}</span>
+                      <p className="text-sm text-slate-700 mt-1">{t.notes}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <StatusBadge status={t.status} />
+                      {t.status !== "Resolved" && (
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs bg-amber-500 hover:bg-amber-600"
+                            onClick={() => setTicketModal({ open: true, mode: "progress", ticketId: t.id })}
+                          >
+                            Progress
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700"
+                            onClick={() => setTicketModal({ open: true, mode: "resolve", ticketId: t.id })}
+                          >
+                            Resolve
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </SectionCollapsible>
 
-      {/* History Finance */}
-      <SectionCollapsible title="📋 History">
-        <div className="space-y-2">
-          {serviceHistory.map((h) => (
-            <div key={h.idService} className="border border-slate-200 p-3 rounded-lg bg-white shadow-sm">
-              <p className="text-sm font-medium text-slate-800">
-                {h.idService} – {h.clientName}
-              </p>
-              <p className="text-xs text-slate-500">
-                {h.tipeLayanan} | {h.unit} unit | {h.tanggal}
-              </p>
-              <StatusBadge status={h.status} />
+      {/* History */}
+      <SectionCollapsible title="History">
+        {history.length === 0 ? (
+          <p className="text-sm text-slate-500 px-2">Belum ada history.</p>
+        ) : (
+          <div className="space-y-2">
+            {history.map((h) => (
+              <div key={h.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-slate-700">{h.action}</p>
+                  <p className="text-xs text-slate-500">Task: {h.taskId}</p>
+                </div>
+                <span className="text-xs text-slate-400 shrink-0">{h.date}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionCollapsible>
+
+      {/* Ticket Action Modal */}
+      <TicketActionModal
+        open={ticketModal.open}
+        onClose={() => setTicketModal({ open: false, mode: "resolve", ticketId: "" })}
+        onConfirm={handleTicketAction}
+        mode={ticketModal.mode}
+        ticketId={ticketModal.ticketId}
+      />
+
+      {/* Delegasikan Ulang Modal (Ditolak Partner) — only partner field editable */}
+      <Dialog
+        open={delegasiModal.open}
+        onOpenChange={(v) => {
+          if (!v) {
+            setDelegasiModal({ open: false, taskId: "", task: null });
+            setNewPartnerId("");
+            setNewPartnerName("");
+          }
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base">Delegasikan Ulang: {delegasiModal.taskId}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-600">Partner ID <span className="text-red-500">*</span></Label>
+              <Input
+                className="h-9 text-sm"
+                placeholder="ID Partner baru..."
+                value={newPartnerId}
+                onChange={(e) => setNewPartnerId(e.target.value)}
+              />
             </div>
-          ))}
-          {serviceHistory.length === 0 && (
-            <p className="text-slate-500 text-sm py-2">Belum ada history</p>
-          )}
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-600">Nama Partner <span className="text-red-500">*</span></Label>
+              <Input
+                className="h-9 text-sm"
+                placeholder="Nama Partner baru..."
+                value={newPartnerName}
+                onChange={(e) => setNewPartnerName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-500">Deadline (read-only)</Label>
+              <Input
+                className="h-9 text-sm bg-slate-50"
+                value={delegasiModal.task?.deadline || "-"}
+                readOnly
+                disabled
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-500">Instruksi (read-only)</Label>
+              <Input
+                className="h-9 text-sm bg-slate-50"
+                value={delegasiModal.task?.instruksi || "-"}
+                readOnly
+                disabled
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-slate-500">Unit Estimasi (read-only)</Label>
+              <Input
+                className="h-9 text-sm bg-slate-50"
+                value={delegasiModal.task?.unitUsed !== undefined ? String(delegasiModal.task.unitUsed) : "-"}
+                readOnly
+                disabled
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setDelegasiModal({ open: false, taskId: "", task: null });
+                setNewPartnerId("");
+                setNewPartnerName("");
+              }}
+            >
+              Batal
+            </Button>
+            <Button
+              size="sm"
+              className="bg-teal-600 hover:bg-teal-700"
+              onClick={handleDelegasiUlang}
+              disabled={!newPartnerName.trim()}
+            >
+              Delegasikan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Delegation Modal (Permintaan Baru) */}
+      {newDelegasiModal.open && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md border-slate-200 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-base">Delegasikan Task: {newDelegasiModal.taskId}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Partner ID</Label>
+                <Input
+                  className="h-9 text-sm"
+                  placeholder="ID Partner..."
+                  value={delegasiForm.partnerId}
+                  onChange={(e) => setDelegasiForm((prev) => ({ ...prev, partnerId: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Nama Partner</Label>
+                <Input
+                  className="h-9 text-sm"
+                  placeholder="Nama Partner..."
+                  value={delegasiForm.partnerName}
+                  onChange={(e) => setDelegasiForm((prev) => ({ ...prev, partnerName: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Deadline</Label>
+                <Input
+                  type="date"
+                  className="h-9 text-sm"
+                  value={delegasiForm.deadline}
+                  onChange={(e) => setDelegasiForm((prev) => ({ ...prev, deadline: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Instruksi</Label>
+                <Input
+                  className="h-9 text-sm"
+                  placeholder="Instruksi untuk partner..."
+                  value={delegasiForm.instruksi}
+                  onChange={(e) => setDelegasiForm((prev) => ({ ...prev, instruksi: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Unit Estimasi</Label>
+                <Input
+                  type="number"
+                  className="h-9 text-sm"
+                  placeholder="Estimasi unit..."
+                  value={delegasiForm.unitEstimasi}
+                  onChange={(e) => setDelegasiForm((prev) => ({ ...prev, unitEstimasi: e.target.value }))}
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button className="flex-1 bg-teal-600 hover:bg-teal-700" onClick={handleDelegasi}>
+                  Delegasikan
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setNewDelegasiModal({ open: false, taskId: "" })}
+                >
+                  Batal
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Concierge Dashboard ──────────────────────────────────────────────────────
+
+interface ConciergeTask {
+  id: string;
+  clientName: string;
+  partnerName?: string;
+  serviceType: string;
+  status: string;
+}
+
+interface ConciergeUser {
+  id: string;
+  name: string;
+  role: string;
+}
+
+interface ConciergeService {
+  id: string;
+  clientName: string;
+  serviceType: string;
+  status: string;
+}
+
+interface ConciergeTicket {
+  id: string;
+  subject: string;
+  toRole: string;
+  detail: string;
+  status: string;
+}
+
+const mockConciergeTasks: ConciergeTask[] = [
+  { id: "CT001", clientName: "PT Maju Jaya", serviceType: "Tenang", status: "Permintaan Baru" },
+  { id: "CT002", clientName: "CV Berkah", serviceType: "Rapi", status: "QA" },
+  { id: "CT003", clientName: "Budi Santoso", partnerName: "Siti Rahayu", serviceType: "Fokus", status: "Revisi" },
+  { id: "CT004", clientName: "PT Maju Jaya", partnerName: "Ahmad Fauzi", serviceType: "Jaga", status: "Ditolak" },
+  { id: "CT005", clientName: "CV Berkah", partnerName: "Rudi Hermawan", serviceType: "Efisien", status: "Review" },
+  { id: "CT006", clientName: "Budi Santoso", partnerName: "Siti Rahayu", serviceType: "Tenang", status: "Selesai" },
+  { id: "CT007", clientName: "PT Maju Jaya", serviceType: "Rapi", status: "Permintaan Baru" },
+];
+
+const mockConciergeUsers: ConciergeUser[] = [
+  { id: "U001", name: "Budi Santoso", role: "Client" },
+  { id: "U002", name: "Siti Rahayu", role: "Partner" },
+  { id: "U003", name: "Ahmad Fauzi", role: "Client" },
+  { id: "U004", name: "Dewi Lestari", role: "Internal" },
+  { id: "U005", name: "Rudi Hermawan", role: "Partner" },
+  { id: "U008", name: "Rina Kusuma", role: "Internal" },
+  { id: "U009", name: "Fajar Nugroho", role: "Internal" },
+];
+
+const mockConciergeServices: ConciergeService[] = [
+  { id: "S001", clientName: "Client A", serviceType: "Tenang", status: "Aktif" },
+  { id: "S002", clientName: "Client B", serviceType: "Rapi", status: "Aktif" },
+  { id: "S003", clientName: "PT Maju Jaya", serviceType: "Fokus", status: "Hold" },
+  { id: "S004", clientName: "CV Berkah", serviceType: "Jaga", status: "Pending" },
+  { id: "S005", clientName: "Budi Santoso", serviceType: "Efisien", status: "Aktif" },
+];
+
+const ITEMS_PER_PAGE = 3;
+
+function ConciergeDashboard() {
+  const [globalSearch, setGlobalSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [currentTaskPage, setCurrentTaskPage] = useState(1);
+  const [currentUserPage, setCurrentUserPage] = useState(1);
+  const [currentServicePage, setCurrentServicePage] = useState(1);
+  const [ticketRole, setTicketRole] = useState("");
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketDetail, setTicketDetail] = useState("");
+  const [tickets, setTickets] = useState<ConciergeTicket[]>([]);
+
+  const filteredTasks = mockConciergeTasks.filter((t) => {
+    const matchSearch =
+      globalSearch === "" ||
+      t.id.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      t.clientName.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      (t.partnerName || "").toLowerCase().includes(globalSearch.toLowerCase()) ||
+      t.serviceType.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      t.status.toLowerCase().includes(globalSearch.toLowerCase());
+    const matchStatus = statusFilter === "All" || t.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  const filteredUsers = mockConciergeUsers.filter(
+    (u) =>
+      globalSearch === "" ||
+      u.id.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      u.name.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      u.role.toLowerCase().includes(globalSearch.toLowerCase())
+  );
+
+  const filteredServices = mockConciergeServices.filter(
+    (s) =>
+      globalSearch === "" ||
+      s.id.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      s.clientName.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      s.serviceType.toLowerCase().includes(globalSearch.toLowerCase()) ||
+      s.status.toLowerCase().includes(globalSearch.toLowerCase())
+  );
+
+  const totalTaskPages = Math.max(1, Math.ceil(filteredTasks.length / ITEMS_PER_PAGE));
+  const totalUserPages = Math.max(1, Math.ceil(filteredUsers.length / ITEMS_PER_PAGE));
+  const totalServicePages = Math.max(1, Math.ceil(filteredServices.length / ITEMS_PER_PAGE));
+
+  const safeTaskPage = Math.min(currentTaskPage, totalTaskPages);
+  const safeUserPage = Math.min(currentUserPage, totalUserPages);
+  const safeServicePage = Math.min(currentServicePage, totalServicePages);
+
+  const paginatedTasks = filteredTasks.slice((safeTaskPage - 1) * ITEMS_PER_PAGE, safeTaskPage * ITEMS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice((safeUserPage - 1) * ITEMS_PER_PAGE, safeUserPage * ITEMS_PER_PAGE);
+  const paginatedServices = filteredServices.slice((safeServicePage - 1) * ITEMS_PER_PAGE, safeServicePage * ITEMS_PER_PAGE);
+
+  const handleCreateTicket = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ticketRole || !ticketSubject || !ticketDetail) return;
+    const newTicket: ConciergeTicket = {
+      id: `TKT${Date.now()}`,
+      subject: ticketSubject,
+      toRole: ticketRole,
+      detail: ticketDetail,
+      status: "open",
+    };
+    setTickets((prev) => [newTicket, ...prev]);
+    setTicketRole("");
+    setTicketSubject("");
+    setTicketDetail("");
+  };
+
+  return (
+    <div className="space-y-4">
+      <SectionCollapsible title="Search Task / User / Layanan" defaultOpen>
+        <div className="mb-4 flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search Task / User / Layanan"
+              value={globalSearch}
+              onChange={(e) => {
+                setGlobalSearch(e.target.value);
+                setCurrentTaskPage(1);
+                setCurrentUserPage(1);
+                setCurrentServicePage(1);
+              }}
+              className="pl-9 h-9 text-sm"
+            />
+          </div>
+          <Select
+            value={statusFilter}
+            onValueChange={(val) => {
+              setStatusFilter(val);
+              setCurrentTaskPage(1);
+            }}
+          >
+            <SelectTrigger className="h-9 text-sm w-full sm:w-48">
+              <SelectValue placeholder="Filter by Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {["All", "Permintaan Baru", "QA", "Revisi", "Ditolak", "Review", "Selesai"].map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="mb-1">
+          <p className="text-xs font-semibold text-slate-600 mb-2">Task ({filteredTasks.length})</p>
+          <div className="rounded-md border border-slate-200 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50">
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Task ID</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Client</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Partner</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Layanan</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedTasks.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-sm text-slate-400 py-4">Tidak ada data task.</TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedTasks.map((task) => (
+                    <TableRow key={task.id} className="hover:bg-slate-50">
+                      <TableCell className="text-xs font-mono py-2">{task.id}</TableCell>
+                      <TableCell className="text-xs py-2">{task.clientName}</TableCell>
+                      <TableCell className="text-xs py-2">{task.partnerName || "-"}</TableCell>
+                      <TableCell className="text-xs py-2">{task.serviceType}</TableCell>
+                      <TableCell className="text-xs py-2"><StatusBadge status={task.status} /></TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCurrentTaskPage((p) => Math.max(1, p - 1))} disabled={safeTaskPage === 1}>Prev</Button>
+            <p className="text-xs text-slate-500">Page {safeTaskPage} / {totalTaskPages}</p>
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCurrentTaskPage((p) => Math.min(totalTaskPages, p + 1))} disabled={safeTaskPage === totalTaskPages}>Next</Button>
+          </div>
+        </div>
+
+        <div className="mt-4 mb-1">
+          <p className="text-xs font-semibold text-slate-600 mb-2">User ({filteredUsers.length})</p>
+          <div className="rounded-md border border-slate-200 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50">
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">User ID</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Name</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Role</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-sm text-slate-400 py-4">Tidak ada data user.</TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedUsers.map((user) => (
+                    <TableRow key={user.id} className="hover:bg-slate-50">
+                      <TableCell className="text-xs font-mono py-2">{user.id}</TableCell>
+                      <TableCell className="text-xs py-2">{user.name}</TableCell>
+                      <TableCell className="text-xs py-2"><Badge variant="outline" className="text-xs py-0">{user.role}</Badge></TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCurrentUserPage((p) => Math.max(1, p - 1))} disabled={safeUserPage === 1}>Prev</Button>
+            <p className="text-xs text-slate-500">Page {safeUserPage} / {totalUserPages}</p>
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCurrentUserPage((p) => Math.min(totalUserPages, p + 1))} disabled={safeUserPage === totalUserPages}>Next</Button>
+          </div>
+        </div>
+
+        <div className="mt-4 mb-1">
+          <p className="text-xs font-semibold text-slate-600 mb-2">Layanan ({filteredServices.length})</p>
+          <div className="rounded-md border border-slate-200 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50">
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Layanan ID</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Client</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Tipe Layanan</TableHead>
+                  <TableHead className="text-xs font-semibold text-slate-600 py-2">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedServices.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-sm text-slate-400 py-4">Tidak ada data layanan.</TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedServices.map((service) => (
+                    <TableRow key={service.id} className="hover:bg-slate-50">
+                      <TableCell className="text-xs font-mono py-2">{service.id}</TableCell>
+                      <TableCell className="text-xs py-2">{service.clientName}</TableCell>
+                      <TableCell className="text-xs py-2">{service.serviceType}</TableCell>
+                      <TableCell className="text-xs py-2"><StatusBadge status={service.status} /></TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCurrentServicePage((p) => Math.max(1, p - 1))} disabled={safeServicePage === 1}>Prev</Button>
+            <p className="text-xs text-slate-500">Page {safeServicePage} / {totalServicePages}</p>
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCurrentServicePage((p) => Math.min(totalServicePages, p + 1))} disabled={safeServicePage === totalServicePages}>Next</Button>
+          </div>
+        </div>
+      </SectionCollapsible>
+
+      <SectionCollapsible title="Buat Tiket" defaultOpen>
+        <form onSubmit={handleCreateTicket} className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs text-slate-600">Kepada Role</Label>
+            <Select value={ticketRole} onValueChange={setTicketRole} required>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder="Pilih role tujuan..." />
+              </SelectTrigger>
+              <SelectContent>
+                {["AdminUser", "AdminFinance", "Asistenmu", "Partner"].map((r) => (
+                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-slate-600">Judul Tiket</Label>
+            <Input
+              placeholder="Masukkan judul tiket"
+              value={ticketSubject}
+              onChange={(e) => setTicketSubject(e.target.value)}
+              className="h-9 text-sm"
+              required
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-slate-600">Detail Tiket</Label>
+            <Textarea
+              placeholder="Masukkan detail tiket"
+              value={ticketDetail}
+              onChange={(e) => setTicketDetail(e.target.value)}
+              className="text-sm min-h-[80px]"
+              required
+            />
+          </div>
+          <Button
+            type="submit"
+            className="bg-teal-600 hover:bg-teal-700"
+            disabled={!ticketRole || !ticketSubject || !ticketDetail}
+          >
+            Kirim Tiket
+          </Button>
+        </form>
+
+        {tickets.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <p className="text-xs font-semibold text-slate-600">Tiket Terbaru:</p>
+            {tickets.map((t) => (
+              <Card key={t.id} className="border-slate-200">
+                <CardHeader className="pb-1 pt-3 px-4">
+                  <CardTitle className="text-sm font-semibold text-slate-800">{t.subject}</CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 pt-0 space-y-1">
+                  <p className="text-xs text-slate-500">Kepada: <span className="font-medium text-slate-700">{t.toRole}</span></p>
+                  <p className="text-sm text-slate-600">{t.detail}</p>
+                  <div className="pt-1">
+                    <StatusBadge status={t.status} />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </SectionCollapsible>
     </div>
   );
 }
 
-// ─── Main InternalDashboard Page ──────────────────────────────────────────────
+// ─── Superadmin Collapsible Wrapper ───────────────────────────────────────────
+
+function SuperadminCollapsibleSection({
+  title,
+  accentColor,
+  children,
+}: {
+  title: string;
+  accentColor: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(true);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger asChild>
+        <button
+          className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm mb-1"
+          type="button"
+        >
+          <div className="flex items-center gap-3">
+            <div className={`h-4 w-1.5 rounded-full ${accentColor}`} />
+            <span className="font-bold text-sm text-slate-800">{title}</span>
+          </div>
+          {open ? <ChevronUp className="h-4 w-4 text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-500" />}
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="mt-2 mb-6 pl-2 border-l-2 border-slate-100">
+          {children}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+// ─── Main InternalDashboard ───────────────────────────────────────────────────
+
+type DashboardRole = "AdminUser" | "Asistenmu" | "AdminFinance" | "Superadmin" | "Concierge";
 
 export default function InternalDashboard() {
   const navigate = useNavigate();
-
-  // Simulated role — in production this would come from auth context
-  const [currentRole, setCurrentRole] = useState<
-    "AdminUser" | "Asistenmu" | "AdminFinance" | "Superadmin"
-  >("Superadmin");
-
-  const showAdminUser = currentRole === "AdminUser" || currentRole === "Superadmin";
-  const showAsitenmu = currentRole === "Asistenmu" || currentRole === "Superadmin";
-  const showAdminFinance = currentRole === "AdminFinance" || currentRole === "Superadmin";
+  const [role, setRole] = useState<DashboardRole>("AdminUser");
 
   return (
     <DashboardShell
       header={
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-slate-800">Dashboard Internal</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Role:{" "}
-              <span className="font-semibold text-teal-600">{currentRole}</span>
+            <h1 className="text-xl font-bold text-slate-800">Internal Dashboard</h1>
+            <p className="text-sm text-slate-500 mt-0.5">
+              {role === "AdminUser" && "Manajemen User & Tiket"}
+              {role === "Asistenmu" && "Manajemen Task & Delegasi"}
+              {role === "AdminFinance" && "Manajemen Keuangan & Layanan"}
+              {role === "Superadmin" && "Akses Penuh Semua Dashboard"}
+              {role === "Concierge" && "Concierge Dashboard"}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Role switcher for demo */}
-            <Select
-              value={currentRole}
-              onValueChange={(v) =>
-                setCurrentRole(v as "AdminUser" | "Asistenmu" | "AdminFinance" | "Superadmin")
-              }
-            >
-              <SelectTrigger className="h-8 text-xs w-40">
+            <Label className="text-xs text-slate-500 shrink-0">Role:</Label>
+            <Select value={role} onValueChange={(val) => setRole(val as DashboardRole)}>
+              <SelectTrigger className="h-8 text-xs w-36">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Superadmin">Superadmin</SelectItem>
                 <SelectItem value="AdminUser">AdminUser</SelectItem>
                 <SelectItem value="Asistenmu">Asistenmu</SelectItem>
                 <SelectItem value="AdminFinance">AdminFinance</SelectItem>
+                <SelectItem value="Superadmin">Superadmin</SelectItem>
+                <SelectItem value="Concierge">Concierge</SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant="outline"
               size="sm"
-              className="text-xs"
+              className="h-8 text-xs"
               onClick={() => navigate({ to: "/" })}
             >
               Keluar
@@ -1652,46 +2452,45 @@ export default function InternalDashboard() {
         </div>
       }
     >
-      <div className="space-y-8">
-        {/* AdminUser Section */}
-        {showAdminUser && (
-          <section>
-            {currentRole === "Superadmin" && (
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-1 w-6 bg-teal-500 rounded-full" />
-                <h2 className="text-base font-bold text-slate-700">Admin User Dashboard</h2>
-              </div>
-            )}
+      {role === "AdminUser" && (
+        <section>
+          <AdminUserDashboard />
+        </section>
+      )}
+      {role === "Asistenmu" && (
+        <section>
+          <AsistenmuDashboard />
+        </section>
+      )}
+      {role === "AdminFinance" && (
+        <section>
+          <AdminFinanceDashboard />
+        </section>
+      )}
+      {role === "Concierge" && (
+        <section>
+          <ConciergeDashboard />
+        </section>
+      )}
+      {role === "Superadmin" && (
+        <div className="space-y-4">
+          <SuperadminCollapsibleSection title="AdminUser Dashboard" accentColor="bg-blue-500">
             <AdminUserDashboard />
-          </section>
-        )}
+          </SuperadminCollapsibleSection>
 
-        {/* Asistenmu Section */}
-        {showAsitenmu && (
-          <section>
-            {currentRole === "Superadmin" && (
-              <div className="flex items-center gap-2 mb-4 mt-2">
-                <div className="h-1 w-6 bg-blue-500 rounded-full" />
-                <h2 className="text-base font-bold text-slate-700">Asistenmu Dashboard</h2>
-              </div>
-            )}
-            <AsistenmuDashboard />
-          </section>
-        )}
-
-        {/* AdminFinance Section */}
-        {showAdminFinance && (
-          <section>
-            {currentRole === "Superadmin" && (
-              <div className="flex items-center gap-2 mb-4 mt-2">
-                <div className="h-1 w-6 bg-emerald-500 rounded-full" />
-                <h2 className="text-base font-bold text-slate-700">Admin Finance Dashboard</h2>
-              </div>
-            )}
+          <SuperadminCollapsibleSection title="AdminFinance Dashboard" accentColor="bg-emerald-500">
             <AdminFinanceDashboard />
-          </section>
-        )}
-      </div>
+          </SuperadminCollapsibleSection>
+
+          <SuperadminCollapsibleSection title="Asistenmu Dashboard" accentColor="bg-teal-500">
+            <AsistenmuDashboard />
+          </SuperadminCollapsibleSection>
+
+          <SuperadminCollapsibleSection title="Concierge Dashboard" accentColor="bg-purple-500">
+            <ConciergeDashboard />
+          </SuperadminCollapsibleSection>
+        </div>
+      )}
     </DashboardShell>
   );
 }

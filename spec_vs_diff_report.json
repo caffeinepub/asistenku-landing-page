@@ -1,36 +1,76 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T21:54:04.547Z",
-  "summary": "The diff modifies frontend/src/pages/dashboard/internal.tsx to implement the requested features. The file is truncated at 4000 chars, so full verification is limited. Based on available evidence: REQ-1 appears partially implemented with Partner role mock data structure present. REQ-2, REQ-3, REQ-4 cannot be fully verified due to truncation. The project_state.json and frontend-file-summaries.txt show updated state tracking but no new component files were added.",
+  "generatedAt": "2026-02-25T01:25:16.850Z",
+  "summary": "The diff modifies frontend/src/pages/dashboard/internal.tsx with imports for Collapsible, Dialog, Textarea, and other Shadcn UI components, along with mock data structures and interfaces. However, the diff is heavily truncated (cut off mid-way through the file), making it impossible to fully verify implementation of all 8 requirements. Based on what is visible, the imports and data structures are in place, but the actual rendering/component logic for most requirements cannot be confirmed.",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "Delegation modal must have all five input fields: Partner (id/principalId/nama/skill), Jam Efektif, Unit Layanan Terpakai, Link GDrive Internal, Link GDrive Client, and Batal/Delegasikan buttons.",
-      "reason": "The file is truncated at 4000 chars and the AsistenmuDashboardSection implementation including the delegation modal cannot be confirmed present in the visible portion of the diff.",
+      "id": "REQ-1",
+      "requirement": "Wrap each sub-dashboard in a Collapsible with defaultOpen=true, showing dashboard names as CardTitle in CollapsibleTrigger",
+      "reason": "The diff imports Collapsible components but the actual Superadmin section rendering with Collapsible wrappers is not visible in the truncated diff. Cannot confirm implementation.",
       "evidence": [
         "frontend/src/pages/dashboard/internal.tsx"
       ]
     },
     {
       "id": "REQ-2",
-      "requirement": "Tiket section with filter and Resolve button for unresolved tickets, and History section with filter input, both using local mock state.",
-      "reason": "Due to truncation of internal.tsx, the Tiket and History collapsible sections for the Asistenmu role cannot be confirmed in the diff.",
+      "requirement": "AdminUser ticket list: Progress and Resolve buttons with mandatory notes textarea; Resolve opens modal with 'Resolve Tiket' button disabled until notes filled",
+      "reason": "Ticket mock data is visible but the AdminUser dashboard rendering with Progress/Resolve buttons and modal logic is cut off in the truncated diff.",
       "evidence": [
         "frontend/src/pages/dashboard/internal.tsx"
       ]
     },
     {
       "id": "REQ-3",
-      "requirement": "When the logged-in role is Superadmin, all dashboard sections are rendered simultaneously with no restrictions.",
-      "reason": "Due to truncation of internal.tsx, the conditional rendering logic for Superadmin cannot be verified from the available diff content.",
+      "requirement": "Asistenmu dashboard: summary cards at top, then 'Client Terkait' collapsible section (defaultOpen) with table columns: ID Layanan, Tipe Layanan, Nama Client, Status Layanan, Unit Aktif, Share Layanan",
+      "reason": "The Asistenmu dashboard rendering section is not visible in the truncated diff. Cannot confirm this layout or table implementation.",
+      "evidence": [
+        "frontend/src/pages/dashboard/internal.tsx"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Asistenmu dashboard: consolidate 6 task status cards into single 'Task Management' collapsible; 'Ditolak Partner' tasks have 'Delegasikan Ulang' button opening modal with read-only fields except Partner",
+      "reason": "Task Management section rendering is not visible in the truncated diff.",
+      "evidence": [
+        "frontend/src/pages/dashboard/internal.tsx"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Asistenmu ticket list: Progress and Resolve buttons with mandatory notes; Resolve modal with 'Resolve Tiket' button disabled until notes filled",
+      "reason": "Asistenmu ticket list rendering is not visible in the truncated diff.",
+      "evidence": [
+        "frontend/src/pages/dashboard/internal.tsx"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "AdminFinance dashboard: replace GMV virtual/concierge cards with 5 per-service-type GMV cards: Tenang, Rapi, Fokus, Jaga, Efisien",
+      "reason": "AdminFinance dashboard rendering section is not visible in the truncated diff.",
+      "evidence": [
+        "frontend/src/pages/dashboard/internal.tsx"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "requirement": "AdminFinance Aktivasi Layanan: replace client dropdown with autocomplete search filtering by name, user ID, or principal ID",
+      "reason": "The Aktivasi Layanan form rendering is not visible in the truncated diff.",
+      "evidence": [
+        "frontend/src/pages/dashboard/internal.tsx"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "AdminFinance ticket list: Progress and Resolve buttons with mandatory notes; Resolve modal with 'Resolve Tiket' button disabled until notes filled",
+      "reason": "AdminFinance ticket list rendering is not visible in the truncated diff.",
       "evidence": [
         "frontend/src/pages/dashboard/internal.tsx"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.4,
+  "confidence": 0.2,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/pages/dashboard/internal.tsx",
