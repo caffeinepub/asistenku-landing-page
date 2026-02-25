@@ -13,6 +13,7 @@ import TentangPartner from "./pages/TentangPartner";
 import InternalPortal from "./pages/InternalPortal";
 import PartnerPortal from "./pages/PartnerPortal";
 import ClientRegister from "./pages/ClientRegister";
+import ClientLogin from "./pages/ClientLogin";
 import DashboardClient from "./pages/DashboardClient";
 import DashboardPartner from "./pages/DashboardPartner";
 import InternalDashboard from "./pages/dashboard/internal";
@@ -59,6 +60,12 @@ const clientRegisterRoute = createRoute({
   component: ClientRegister,
 });
 
+const clientLoginRoute = createRoute({
+  getParentRoute: () => publicLayoutRoute,
+  path: "/client-login",
+  component: ClientLogin,
+});
+
 const appLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-layout",
@@ -90,6 +97,7 @@ const routeTree = rootRoute.addChildren([
     internalPortalRoute,
     partnerPortalRoute,
     clientRegisterRoute,
+    clientLoginRoute,
   ]),
   appLayoutRoute.addChildren([
     dashboardClientRoute,

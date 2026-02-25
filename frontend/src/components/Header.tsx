@@ -1,10 +1,15 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleMasuk = () => {
+    navigate({ to: '/client-login' });
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -29,8 +34,12 @@ export default function Header() {
           <Button variant="ghost" size="sm" asChild>
             <Link to="/client-register">Daftar</Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/internal-portal">Masuk</Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleMasuk}
+          >
+            Masuk
           </Button>
         </nav>
 
@@ -72,10 +81,12 @@ export default function Header() {
               variant="ghost"
               size="sm"
               className="justify-start"
-              asChild
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleMasuk();
+              }}
             >
-              <Link to="/internal-portal">Masuk</Link>
+              Masuk
             </Button>
           </nav>
         </div>

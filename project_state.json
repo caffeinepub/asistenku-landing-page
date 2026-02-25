@@ -1,145 +1,53 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Internal dashboard project for a multi-role platform. The /dashboard/internal page has AdminUser, AdminFinance, Asistenmu, Concierge, and Superadmin dashboards. Multiple UI/layout changes are being built: Superadmin collapsible sub-dashboards, Progress/Resolve buttons with mandatory notes modal across all dashboards, Asistenmu Task Management section consolidation + Client list + read-only delegasi ulang modal, AdminFinance GMV per service type + autocomplete client search.",
+  "summary": "ICP/Internet Identity app with admin claim, registration forms (internal, partner, client), and role-based approval dashboard. Removing restriction that only admin can register users, replacing with open registration for all II-authenticated users while only #admin and #adminUser can approve/reject pending registrations.",
   "architectural_notes": [
-    "Page /dashboard/internal contains 5 role-based dashboards: AdminUser, AdminFinance, Asistenmu, Concierge, Superadmin",
-    "All ticket resolve/progress actions require a mandatory notes field before confirming"
+    "Backend is Motoko (main.mo) on ICP with Internet Identity authentication",
+    "Registration data stored in stable var with status: pending/approved/rejected",
+    "Three separate registration forms: internal, partner, client — each with distinct fields"
   ],
   "known_issues": [
-    "Previous build (v36) failed to apply requested changes - likely due to file size hitting iteration limits"
+    "Build repeatedly failing when attempting large changes to main.mo; needs to be broken into smaller incremental steps"
   ],
-  "isFixRequest": false,
-  "existing_features": [
-    {
-      "id": "feature-in-the-superadmin-dashboard-section-of-frontend-src-pages-dashboard-internal-tsx-wrap-each-sub-dashboard-adminuser-adminfinance-asistenmu-concierge-in-a-collapsible-component-with-defaultopen-true-each-collapsible-trigger-must-display-the-dashboard-name-as-a-cardtitle-inside-a-cardheader",
-      "title": "In the Superadmin dashboard section of frontend/src/pages/dashboard/internal.tsx, wrap each sub-dashboard (AdminUser, AdminFinance, Asistenmu, Concierge) in a Collapsible component with defaultOpen=true. Each collapsible trigger must display the dashboard name as a CardTitle inside a CardHeader.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-adminuser-dashboard-ticket-list-add-progress-and-resolve-action-buttons-for-each-ticket-row-pressing-progress-opens-an-inline-or-modal-area-requiring-a-mandatory-notes-textarea-the-action-is-only-confirmed-after-notes-are-submitted-pressing-resolve-opens-a-modal-with-a-mandatory-notes-textarea-and-a-resolve-tiket-confirmation-button",
-      "title": "In the AdminUser dashboard ticket list, add Progress and Resolve action buttons for each ticket row. Pressing Progress opens an inline or modal area requiring a mandatory notes textarea; the action is only confirmed after notes are submitted. Pressing Resolve opens a modal with a mandatory notes textarea and a 'Resolve Tiket' confirmation button.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-asistenmu-dashboard-place-the-summary-cards-at-the-top-then-immediately-below-add-a-client-terkait-collapsible-section-defaultopen-showing-a-table-of-clients-related-to-the-current-asistenmu-user-the-table-columns-must-be-id-layanan-tipe-layanan-nama-client-status-layanan-unit-aktif-share-layanan",
-      "title": "In the Asistenmu dashboard, place the summary cards at the top, then immediately below add a 'Client Terkait' collapsible section (defaultOpen) showing a table of clients related to the current Asistenmu user. The table columns must be: ID Layanan, Tipe Layanan, Nama Client, Status Layanan, Unit Aktif, Share Layanan.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-asistenmu-dashboard-consolidate-the-task-status-cards-permintaan-baru-qa-asistenmu-revisi-client-ditolak-partner-review-client-selesai-into-a-single-collapsible-task-management-section-each-status-is-rendered-as-a-sub-card-within-that-section-for-tasks-under-ditolak-partner-show-a-delegasikan-ulang-button-that-opens-a-modal-displaying-all-task-delegation-fields-all-fields-except-the-partner-selection-field-must-be-read-only-pre-filled-from-the-existing-task-data",
-      "title": "In the Asistenmu dashboard, consolidate the task status cards (Permintaan Baru, QA Asistenmu, Revisi Client, Ditolak Partner, Review Client, Selesai) into a single collapsible 'Task Management' section. Each status is rendered as a sub-card within that section. For tasks under 'Ditolak Partner', show a 'Delegasikan Ulang' button that opens a modal displaying all task delegation fields — all fields except the Partner selection field must be read-only (pre-filled from the existing task data).",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-asistenmu-dashboard-ticket-list-add-progress-and-resolve-action-buttons-to-each-ticket-row-both-buttons-require-a-mandatory-notes-textarea-before-confirming-resolve-opens-a-modal-with-a-resolve-tiket-button-that-is-disabled-until-notes-are-filled",
-      "title": "In the Asistenmu dashboard ticket list, add Progress and Resolve action buttons to each ticket row. Both buttons require a mandatory notes textarea before confirming. Resolve opens a modal with a 'Resolve Tiket' button that is disabled until notes are filled.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-adminfinance-dashboard-replace-the-existing-gmv-summary-cards-which-currently-show-virtual-concierge-breakdown-with-per-service-type-gmv-cards-showing-values-for-tenang-rapi-fokus-jaga-and-efisien",
-      "title": "In the AdminFinance dashboard, replace the existing GMV summary cards (which currently show virtual/concierge breakdown) with per-service-type GMV cards showing values for: Tenang, Rapi, Fokus, Jaga, and Efisien.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-adminfinance-dashboard-aktivasi-layanan-form-replace-the-client-dropdown-with-an-autocomplete-search-input-the-search-must-filter-clients-by-name-user-id-or-principal-id-showing-matching-suggestions-as-the-user-types-selecting-a-suggestion-populates-the-client-field",
-      "title": "In the AdminFinance dashboard Aktivasi Layanan form, replace the client dropdown with an autocomplete search input. The search must filter clients by name, user ID, or principal ID, showing matching suggestions as the user types. Selecting a suggestion populates the client field.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-adminfinance-dashboard-ticket-list-add-progress-and-resolve-action-buttons-to-each-ticket-row-both-buttons-require-a-mandatory-notes-textarea-before-confirming-the-action-the-resolve-action-opens-a-modal-with-a-resolve-tiket-button-that-is-disabled-until-notes-are-filled",
-      "title": "In the AdminFinance dashboard ticket list, add Progress and Resolve action buttons to each ticket row. Both buttons require a mandatory notes textarea before confirming the action. The Resolve action opens a modal with a 'Resolve Tiket' button that is disabled until notes are filled.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    }
-  ],
+  "isFixRequest": true,
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Superadmin dashboard: wrap each sub-dashboard in a collapsible section",
+      "summary": "Remove admin-only registration restriction in main.mo so all II-authenticated users can submit registration forms (internal, partner, client)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "AdminUser dashboard: add Progress and Resolve buttons to ticket list with mandatory notes modal",
+      "summary": "Only #admin and #adminUser can approve/reject pending registrations; registration data stored in stable var with initial status pending",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Asistenmu dashboard: consolidate 6 task status cards into one Task Management collapsible section",
+      "summary": "For internal registrations, admin determines role at approval time; for partner and client, role is set by user at form submission",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Asistenmu dashboard: add Client list below summary cards (ID Layanan, Tipe Layanan, Nama Client, Status, Unit Aktif, Share Layanan)",
+      "summary": "Users can only view their own registration status (pending/approved/rejected)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Asistenmu dashboard: Delegasikan Ulang modal shows all fields but only Partner field is editable (others read-only)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Asistenmu dashboard: add Progress and Resolve buttons to ticket list with mandatory notes modal",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "AdminFinance dashboard: replace GMV virtual/concierge summary cards with per-service-type GMV cards (Tenang, Rapi, Fokus, Jaga, Efisien)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "AdminFinance dashboard: replace client dropdown in Aktivasi Layanan with autocomplete search by name/ID/principalId",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "AdminFinance dashboard: add Progress and Resolve buttons to ticket list with mandatory notes modal",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Global: all Progress and Resolve buttons require mandatory notes before confirming action",
-      "reqIds": [],
+      "summary": "In backend/main.mo, remove any access-control guard on the user registration functions (for internal, partner, and client) that restricts registration to admin-only callers. After this change, any authenticated Internet Identity principal must be able to call these registration functions without a role check blocking them.",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Asistenku Internal",
+  "projectName": "Asistenku Portal",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -8,10 +8,170 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const idlService = IDL.Service({});
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const UserProfile = IDL.Record({
+  'status' : IDL.Text,
+  'nama' : IDL.Text,
+  'role' : IDL.Text,
+  'whatsapp' : IDL.Text,
+  'email' : IDL.Text,
+  'idUser' : IDL.Text,
+});
+export const Role = IDL.Variant({
+  'client' : IDL.Null,
+  'admin' : IDL.Null,
+  'adminfinance' : IDL.Null,
+  'concierge' : IDL.Null,
+  'adminuser' : IDL.Null,
+  'guest' : IDL.Null,
+  'asistenmu' : IDL.Null,
+  'partner' : IDL.Null,
+});
+export const RegisterUserResponse = IDL.Record({
+  'ok' : IDL.Bool,
+  'message' : IDL.Text,
+  'idUser' : IDL.Text,
+});
+
+export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'claimAdmin' : IDL.Func(
+      [],
+      [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+      [],
+    ),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getUserByPrincipal' : IDL.Func(
+      [IDL.Text],
+      [
+        IDL.Opt(
+          IDL.Record({
+            'status' : IDL.Text,
+            'nama' : IDL.Text,
+            'role' : IDL.Text,
+            'idUser' : IDL.Text,
+          })
+        ),
+      ],
+      ['query'],
+    ),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'getUserRole' : IDL.Func([], [IDL.Opt(Role)], ['query']),
+  'isAdminClaimed' : IDL.Func([], [IDL.Bool], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'registerUser' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        Role,
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+      ],
+      [RegisterUserResponse],
+      [],
+    ),
+  'saveCallerUserProfile' : IDL.Func(
+      [UserProfile],
+      [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+      [],
+    ),
+});
 
 export const idlInitArgs = [];
 
-export const idlFactory = ({ IDL }) => { return IDL.Service({}); };
+export const idlFactory = ({ IDL }) => {
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const UserProfile = IDL.Record({
+    'status' : IDL.Text,
+    'nama' : IDL.Text,
+    'role' : IDL.Text,
+    'whatsapp' : IDL.Text,
+    'email' : IDL.Text,
+    'idUser' : IDL.Text,
+  });
+  const Role = IDL.Variant({
+    'client' : IDL.Null,
+    'admin' : IDL.Null,
+    'adminfinance' : IDL.Null,
+    'concierge' : IDL.Null,
+    'adminuser' : IDL.Null,
+    'guest' : IDL.Null,
+    'asistenmu' : IDL.Null,
+    'partner' : IDL.Null,
+  });
+  const RegisterUserResponse = IDL.Record({
+    'ok' : IDL.Bool,
+    'message' : IDL.Text,
+    'idUser' : IDL.Text,
+  });
+  
+  return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'claimAdmin' : IDL.Func(
+        [],
+        [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+        [],
+      ),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getUserByPrincipal' : IDL.Func(
+        [IDL.Text],
+        [
+          IDL.Opt(
+            IDL.Record({
+              'status' : IDL.Text,
+              'nama' : IDL.Text,
+              'role' : IDL.Text,
+              'idUser' : IDL.Text,
+            })
+          ),
+        ],
+        ['query'],
+      ),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'getUserRole' : IDL.Func([], [IDL.Opt(Role)], ['query']),
+    'isAdminClaimed' : IDL.Func([], [IDL.Bool], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'registerUser' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          Role,
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+        ],
+        [RegisterUserResponse],
+        [],
+      ),
+    'saveCallerUserProfile' : IDL.Func(
+        [UserProfile],
+        [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+        [],
+      ),
+  });
+};
 
 export const init = ({ IDL }) => { return []; };

@@ -10,7 +10,55 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE {}
+export interface RegisterUserResponse {
+  'ok' : boolean,
+  'message' : string,
+  'idUser' : string,
+}
+export type Role = { 'client' : null } |
+  { 'admin' : null } |
+  { 'adminfinance' : null } |
+  { 'concierge' : null } |
+  { 'adminuser' : null } |
+  { 'guest' : null } |
+  { 'asistenmu' : null } |
+  { 'partner' : null };
+export interface UserProfile {
+  'status' : string,
+  'nama' : string,
+  'role' : string,
+  'whatsapp' : string,
+  'email' : string,
+  'idUser' : string,
+}
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'claimAdmin' : ActorMethod<[], { 'ok' : boolean, 'message' : string }>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getUserByPrincipal' : ActorMethod<
+    [string],
+    [] | [
+      { 'status' : string, 'nama' : string, 'role' : string, 'idUser' : string }
+    ]
+  >,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUserRole' : ActorMethod<[], [] | [Role]>,
+  'isAdminClaimed' : ActorMethod<[], boolean>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'registerUser' : ActorMethod<
+    [string, string, string, string, Role, [] | [string], [] | [string]],
+    RegisterUserResponse
+  >,
+  'saveCallerUserProfile' : ActorMethod<
+    [UserProfile],
+    { 'ok' : boolean, 'message' : string }
+  >,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

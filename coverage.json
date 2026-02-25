@@ -1,111 +1,35 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T01:25:16.853Z",
+  "generatedAt": "2026-02-25T23:45:36.099Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 8,
-    "implemented": 8,
+    "total": 1,
+    "implemented": 0,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "In the Superadmin dashboard section of frontend/src/pages/dashboard/internal.tsx, wrap each sub-dashboard (AdminUser, AdminFinance, Asistenmu, Concierge) in a Collapsible component with defaultOpen=true. Each collapsible trigger must display the dashboard name as a CardTitle inside a CardHeader.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-2",
-        "summary": "In the AdminUser dashboard ticket list, add Progress and Resolve action buttons for each ticket row. Pressing Progress opens an inline or modal area requiring a mandatory notes textarea; the action is only confirmed after notes are submitted. Pressing Resolve opens a modal with a mandatory notes textarea and a 'Resolve Tiket' confirmation button.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "In the Asistenmu dashboard, place the summary cards at the top, then immediately below add a 'Client Terkait' collapsible section (defaultOpen) showing a table of clients related to the current Asistenmu user. The table columns must be: ID Layanan, Tipe Layanan, Nama Client, Status Layanan, Unit Aktif, Share Layanan.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "In the Asistenmu dashboard, consolidate the task status cards (Permintaan Baru, QA Asistenmu, Revisi Client, Ditolak Partner, Review Client, Selesai) into a single collapsible 'Task Management' section. Each status is rendered as a sub-card within that section. For tasks under 'Ditolak Partner', show a 'Delegasikan Ulang' button that opens a modal displaying all task delegation fields — all fields except the Partner selection field must be read-only (pre-filled from the existing task data).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "In the Asistenmu dashboard ticket list, add Progress and Resolve action buttons to each ticket row. Both buttons require a mandatory notes textarea before confirming. Resolve opens a modal with a 'Resolve Tiket' button that is disabled until notes are filled.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "In the AdminFinance dashboard, replace the existing GMV summary cards (which currently show virtual/concierge breakdown) with per-service-type GMV cards showing values for: Tenang, Rapi, Fokus, Jaga, and Efisien.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "In the AdminFinance dashboard Aktivasi Layanan form, replace the client dropdown with an autocomplete search input. The search must filter clients by name, user ID, or principal ID, showing matching suggestions as the user types. Selecting a suggestion populates the client field.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "In the AdminFinance dashboard ticket list, add Progress and Resolve action buttons to each ticket row. Both buttons require a mandatory notes textarea before confirming the action. The Resolve action opens a modal with a 'Resolve Tiket' button that is disabled until notes are filled.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/dashboard/internal.tsx"
-        ]
+        "summary": "In backend/main.mo, remove any access-control guard on the user registration functions (for internal, partner, and client) that restricts registration to admin-only callers. After this change, any authenticated Internet Identity principal must be able to call these registration functions without a role check blocking them.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
+    "build-template/README.md",
+    "caffeine.lock.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/pages/dashboard/internal.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
