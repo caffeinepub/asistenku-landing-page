@@ -89,10 +89,19 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface RegisterUserResponse {
-    ok: boolean;
-    message: string;
-    idUser: string;
+export interface Layanan {
+    id: bigint;
+    status: LayananStatus;
+    clientId: Principal;
+    name: string;
+}
+export interface Task {
+    id: string;
+    tipeLayanan: string;
+    createdAt: bigint;
+    deadline: bigint;
+    detailTask: string;
+    judulTask: string;
 }
 export interface UserProfile {
     status: string;
@@ -101,6 +110,15 @@ export interface UserProfile {
     whatsapp: string;
     email: string;
     idUser: string;
+}
+export interface RegisterUserResponse {
+    ok: boolean;
+    message: string;
+    idUser: string;
+}
+export enum LayananStatus {
+    aktif = "aktif",
+    tidakAktif = "tidakAktif"
 }
 export enum Role {
     client = "client",
@@ -124,8 +142,12 @@ export interface backendInterface {
         ok: boolean;
         message: string;
     }>;
+    createLayanan(name: string, clientId: Principal): Promise<Layanan>;
+    createTask(tipeLayanan: string, judulTask: string, detailTask: string, deadline: bigint): Promise<Task>;
+    getAllLayanan(): Promise<Array<Layanan>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getMyLayanan(): Promise<Array<Layanan>>;
     getUserByPrincipal(principalId: string): Promise<{
         status: string;
         nama: string;
@@ -141,8 +163,9 @@ export interface backendInterface {
         ok: boolean;
         message: string;
     }>;
+    updateLayananStatus(id: bigint, newStatus: LayananStatus): Promise<Layanan>;
 }
-import type { Role as _Role, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { Layanan as _Layanan, LayananStatus as _LayananStatus, Role as _Role, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -190,32 +213,88 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async createLayanan(arg0: string, arg1: Principal): Promise<Layanan> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createLayanan(arg0, arg1);
+                return from_candid_Layanan_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createLayanan(arg0, arg1);
+            return from_candid_Layanan_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async createTask(arg0: string, arg1: string, arg2: string, arg3: bigint): Promise<Task> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createTask(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createTask(arg0, arg1, arg2, arg3);
+            return result;
+        }
+    }
+    async getAllLayanan(): Promise<Array<Layanan>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllLayanan();
+                return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllLayanan();
+            return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserProfile();
-                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n8(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserProfile();
-            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n8(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCallerUserRole(): Promise<UserRole> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+                return from_candid_UserRole_n9(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n9(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getMyLayanan(): Promise<Array<Layanan>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getMyLayanan();
+                return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getMyLayanan();
+            return from_candid_vec_n7(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserByPrincipal(arg0: string): Promise<{
@@ -227,42 +306,42 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserByPrincipal(arg0);
-                return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n11(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserByPrincipal(arg0);
-            return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n11(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserProfile(arg0);
-                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n8(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserProfile(arg0);
-            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n8(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserRole(): Promise<Role | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserRole();
-                return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n12(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserRole();
-            return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n12(this._uploadFile, this._downloadFile, result);
         }
     }
     async isAdminClaimed(): Promise<boolean> {
@@ -296,14 +375,14 @@ export class Backend implements backendInterface {
     async registerUser(arg0: string, arg1: string, arg2: string, arg3: string, arg4: Role, arg5: string | null, arg6: string | null): Promise<RegisterUserResponse> {
         if (this.processError) {
             try {
-                const result = await this.actor.registerUser(arg0, arg1, arg2, arg3, to_candid_Role_n10(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg6));
+                const result = await this.actor.registerUser(arg0, arg1, arg2, arg3, to_candid_Role_n15(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n17(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n17(this._uploadFile, this._downloadFile, arg6));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.registerUser(arg0, arg1, arg2, arg3, to_candid_Role_n10(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg6));
+            const result = await this.actor.registerUser(arg0, arg1, arg2, arg3, to_candid_Role_n15(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n17(this._uploadFile, this._downloadFile, arg5), to_candid_opt_n17(this._uploadFile, this._downloadFile, arg6));
             return result;
         }
     }
@@ -324,17 +403,34 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async updateLayananStatus(arg0: bigint, arg1: LayananStatus): Promise<Layanan> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateLayananStatus(arg0, to_candid_LayananStatus_n18(this._uploadFile, this._downloadFile, arg1));
+                return from_candid_Layanan_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateLayananStatus(arg0, to_candid_LayananStatus_n18(this._uploadFile, this._downloadFile, arg1));
+            return from_candid_Layanan_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
 }
-function from_candid_Role_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Role): Role {
-    return from_candid_variant_n9(_uploadFile, _downloadFile, value);
+function from_candid_LayananStatus_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _LayananStatus): LayananStatus {
+    return from_candid_variant_n6(_uploadFile, _downloadFile, value);
 }
-function from_candid_UserRole_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n5(_uploadFile, _downloadFile, value);
+function from_candid_Layanan_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Layanan): Layanan {
+    return from_candid_record_n4(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
-    return value.length === 0 ? null : value[0];
+function from_candid_Role_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Role): Role {
+    return from_candid_variant_n14(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [{
+function from_candid_UserRole_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n10(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [{
         status: string;
         nama: string;
         role: string;
@@ -347,10 +443,31 @@ function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 } | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Role]): Role | null {
-    return value.length === 0 ? null : from_candid_Role_n8(_uploadFile, _downloadFile, value[0]);
+function from_candid_opt_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Role]): Role | null {
+    return value.length === 0 ? null : from_candid_Role_n13(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    status: _LayananStatus;
+    clientId: Principal;
+    name: string;
+}): {
+    id: bigint;
+    status: LayananStatus;
+    clientId: Principal;
+    name: string;
+} {
+    return {
+        id: value.id,
+        status: from_candid_LayananStatus_n5(_uploadFile, _downloadFile, value.status),
+        clientId: value.clientId,
+        name: value.name
+    };
+}
+function from_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
 } | {
     user: null;
@@ -359,7 +476,7 @@ function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
-function from_candid_variant_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     client: null;
 } | {
     admin: null;
@@ -378,16 +495,29 @@ function from_candid_variant_n9(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }): Role {
     return "client" in value ? Role.client : "admin" in value ? Role.admin : "adminfinance" in value ? Role.adminfinance : "concierge" in value ? Role.concierge : "adminuser" in value ? Role.adminuser : "guest" in value ? Role.guest : "asistenmu" in value ? Role.asistenmu : "partner" in value ? Role.partner : value;
 }
-function to_candid_Role_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Role): _Role {
-    return to_candid_variant_n11(_uploadFile, _downloadFile, value);
+function from_candid_variant_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    aktif: null;
+} | {
+    tidakAktif: null;
+}): LayananStatus {
+    return "aktif" in value ? LayananStatus.aktif : "tidakAktif" in value ? LayananStatus.tidakAktif : value;
+}
+function from_candid_vec_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Layanan>): Array<Layanan> {
+    return value.map((x)=>from_candid_Layanan_n3(_uploadFile, _downloadFile, x));
+}
+function to_candid_LayananStatus_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: LayananStatus): _LayananStatus {
+    return to_candid_variant_n19(_uploadFile, _downloadFile, value);
+}
+function to_candid_Role_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Role): _Role {
+    return to_candid_variant_n16(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);
 }
-function to_candid_opt_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
+function to_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
     return value === null ? candid_none() : candid_some(value);
 }
-function to_candid_variant_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Role): {
+function to_candid_variant_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Role): {
     client: null;
 } | {
     admin: null;
@@ -420,6 +550,17 @@ function to_candid_variant_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint
         asistenmu: null
     } : value == Role.partner ? {
         partner: null
+    } : value;
+}
+function to_candid_variant_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: LayananStatus): {
+    aktif: null;
+} | {
+    tidakAktif: null;
+} {
+    return value == LayananStatus.aktif ? {
+        aktif: null
+    } : value == LayananStatus.tidakAktif ? {
+        tidakAktif: null
     } : value;
 }
 function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {

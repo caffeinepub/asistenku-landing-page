@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useActor } from "./useActor";
-import { Role } from "../backend";
+import { Role, Layanan, Task } from "../backend";
 
 // ─── isAdminClaimed ────────────────────────────────────────────────────────
 export function useIsAdminClaimed() {
@@ -131,4 +131,66 @@ export function useGetUserRole() {
       return actor.getUserRole();
     },
   });
+}
+
+// ─── getMyLayanan ─────────────────────────────────────────────────────────
+export function useGetMyLayanan() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Layanan[]>({
+    queryKey: ["myLayanan"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getMyLayanan();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// ─── createTask ───────────────────────────────────────────────────────────
+export function useCreateTask() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      tipeLayanan: string;
+      judulTask: string;
+      detailTask: string;
+      deadline: bigint;
+    }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.createTask(
+        params.tipeLayanan,
+        params.judulTask,
+        params.detailTask,
+        params.deadline
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myLayanan"] });
+      queryClient.invalidateQueries({ queryKey: ["myTasks"] });
+    },
+  });
+}
+
+// ─── getCallerUserProfile ─────────────────────────────────────────────────
+export function useGetCallerUserProfile() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery({
+    queryKey: ["currentUserProfile"],
+    queryFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.getCallerUserProfile();
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
 }

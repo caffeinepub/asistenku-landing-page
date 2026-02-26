@@ -7,10 +7,19 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface RegisterUserResponse {
-    ok: boolean;
-    message: string;
-    idUser: string;
+export interface Layanan {
+    id: bigint;
+    status: LayananStatus;
+    clientId: Principal;
+    name: string;
+}
+export interface Task {
+    id: string;
+    tipeLayanan: string;
+    createdAt: bigint;
+    deadline: bigint;
+    detailTask: string;
+    judulTask: string;
 }
 export interface UserProfile {
     status: string;
@@ -19,6 +28,15 @@ export interface UserProfile {
     whatsapp: string;
     email: string;
     idUser: string;
+}
+export interface RegisterUserResponse {
+    ok: boolean;
+    message: string;
+    idUser: string;
+}
+export enum LayananStatus {
+    aktif = "aktif",
+    tidakAktif = "tidakAktif"
 }
 export enum Role {
     client = "client",
@@ -41,8 +59,12 @@ export interface backendInterface {
         ok: boolean;
         message: string;
     }>;
+    createLayanan(name: string, clientId: Principal): Promise<Layanan>;
+    createTask(tipeLayanan: string, judulTask: string, detailTask: string, deadline: bigint): Promise<Task>;
+    getAllLayanan(): Promise<Array<Layanan>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getMyLayanan(): Promise<Array<Layanan>>;
     getUserByPrincipal(principalId: string): Promise<{
         status: string;
         nama: string;
@@ -58,4 +80,5 @@ export interface backendInterface {
         ok: boolean;
         message: string;
     }>;
+    updateLayananStatus(id: bigint, newStatus: LayananStatus): Promise<Layanan>;
 }

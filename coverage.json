@@ -1,35 +1,85 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T23:45:36.099Z",
+  "generatedAt": "2026-02-26T12:09:33.970Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 0,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "In backend/main.mo, remove any access-control guard on the user registration functions (for internal, partner, and client) that restricts registration to admin-only callers. After this change, any authenticated Internet Identity principal must be able to call these registration functions without a role check blocking them.",
+        "id": "REQ-3",
+        "summary": "Update the Task type in backend/main.mo to include all required fields: id (Text), tipeLayanan (Text), judulTask (Text), detailTask (Text), deadline (Int), createdAt (Int). Update the shared createTask function to validate that the selected layanan is active (status == #aktif) and owned by the caller (clientId == msg.caller). Ensure getMyLayanan returns only layanan belonging to the calling principal.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "On the /dashboard/client page (frontend/src/pages/DashboardClient.tsx), replace all mock/dummy data with live data fetched from the backend canister. Implement the following using React Query and the actor hook: fetch layanan list via getMyLayanan, fetch tasks grouped by status via getTaskByStatus for each status (#review, #revisi, #on_progress, #qa_asistenmu, #selesai). Display a collapsible Summary Card showing counts per task status.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/DashboardClient.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/DashboardClient.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Add a collapsible 'Buat Task' form section to the /dashboard/client page. The form must include: a dropdown to select an active layanan (populated from getMyLayanan, only shown if more than one active layanan exists), a text input for Judul Task, a textarea for Detail Task, a date picker for Deadline, and a submit button labeled 'Buat Permintaan ke Asistenmu'. The form must only be enabled/shown when the client has at least one active layanan. On submit, call the shared createTask backend function with all required fields.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/DashboardClient.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/DashboardClient.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "On the /dashboard/client page, render five separate collapsible task status cards under a 'Daftar Task Kamu' section: (1) Meminta Review (#review), (2) Task on Revisi (#revisi), (3) Task on Progress (#on_progress), (4) Task QA Asistenmu (#qa_asistenmu), (5) Task Selesai (#selesai). Each card lists tasks belonging to the client for that status. Each individual task entry inside a card should also be collapsible to show full details.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DashboardClient.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DashboardClient.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Add a collapsible 'History' card at the bottom of the /dashboard/client page that displays recent activity for the client, such as task creation events and status changes, derived from the available task data.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DashboardClient.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DashboardClient.tsx"
+        ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
-    "caffeine.lock.json",
     "feature_evidence.json",
+    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/DashboardClient.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

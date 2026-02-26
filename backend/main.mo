@@ -2,10 +2,18 @@ import Text "mo:core/Text";
 import Array "mo:core/Array";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
+import Map "mo:core/Map";
+import Nat "mo:core/Nat";
+import Iter "mo:core/Iter";
+import Migration "migration";
+import Time "mo:core/Time";
+import Int "mo:core/Int";
 
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 
+// Use migration function during upgrade
+(with migration = Migration.run)
 actor {
   type Role = {
     #admin;
@@ -237,5 +245,154 @@ actor {
       case (null) { null };
       case (?user) { ?user.role };
     };
+  };
+
+  type LayananStatus = {
+    #aktif;
+    #tidakAktif;
+  };
+
+  type Task = {
+    id : Text;
+    tipeLayanan : Text;
+    judulTask : Text;
+    detailTask : Text;
+    deadline : Int;
+    createdAt : Int;
+  };
+
+  type Layanan = {
+    id : Nat;
+    name : Text;
+    status : LayananStatus;
+    clientId : Principal;
+  };
+
+  var taskCounter : Nat = 0;
+  var layananCounter : Nat = 0;
+  var nextTaskId : Nat = 1;
+
+  var layananMap : Map.Map<Nat, Layanan> = Map.empty<Nat, Layanan>();
+
+  func layananStatusToText(status : LayananStatus) : Text {
+    switch (status) {
+      case (#aktif) { "active" };
+      case (#tidakAktif) { "inactive" };
+    };
+  };
+
+  func callerIsAdminFinance(caller : Principal) : Bool {
+    switch (findUserByPrincipal(caller)) {
+      case (null) { false };
+      case (?u) {
+        switch (u.role) {
+          case (#adminfinance) { true };
+          case (#admin) { true };
+          case (_) { false };
+        };
+      };
+    };
+  };
+
+  func callerIsSuperadminOrAdminFinance(caller : Principal) : Bool {
+    switch (findUserByPrincipal(caller)) {
+      case (null) { false };
+      case (?u) {
+        switch (u.role) {
+          case (#admin) { true };
+          case (#adminfinance) { true };
+          case (_) { false };
+        };
+      };
+    };
+  };
+
+  // Authenticated createTask: validates tanyaJawab layanan is active & owned by caller
+  public shared ({ caller }) func createTask(
+    tipeLayanan : Text,
+    judulTask : Text,
+    detailTask : Text,
+    deadline : Int,
+  ) : async Task {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can create tasks");
+    };
+
+    // Validate tanyaJawab layanan is milik caller dan aktif
+    if (not isTanyaJawabActiveForCaller(caller)) {
+      Runtime.trap("Tanya Jawab layanan must be active and owned by caller");
+    };
+
+    let task : Task = {
+      id = nextTaskId.toText();
+      tipeLayanan;
+      judulTask;
+      detailTask;
+      deadline;
+      createdAt = Time.now();
+    };
+
+    nextTaskId += 1;
+    task;
+  };
+
+  // Helper function to check if tanyaJawab layanan is active & owned by caller
+  func isTanyaJawabActiveForCaller(caller : Principal) : Bool {
+    layananMap.values().toArray().any(
+      func(l : Layanan) : Bool {
+        l.clientId == caller and l.status == #aktif
+      }
+    );
+  };
+
+  public query func getAllLayanan() : async [Layanan] {
+    layananMap.values().toArray();
+  };
+
+  // createLayanan: requires adminFinance (or admin) role
+  public shared ({ caller }) func createLayanan(name : Text, clientId : Principal) : async Layanan {
+    if (not callerIsAdminFinance(caller)) {
+      Runtime.trap("Unauthorized: Only adminFinance can create layanan");
+    };
+
+    let newLayanan : Layanan = {
+      id = layananCounter;
+      name;
+      status = #aktif;
+      clientId;
+    };
+
+    layananMap.add(newLayanan.id, newLayanan);
+    layananCounter += 1;
+    newLayanan;
+  };
+
+  // updateLayananStatus: requires superadmin or adminFinance role
+  public shared ({ caller }) func updateLayananStatus(id : Nat, newStatus : LayananStatus) : async Layanan {
+    if (not callerIsSuperadminOrAdminFinance(caller)) {
+      Runtime.trap("Unauthorized: Only superadmin and adminFinance can update layanan status");
+    };
+
+    switch (layananMap.get(id)) {
+      case (null) { Runtime.trap("Layanan " # id.toText() # " not found") };
+      case (?existingLayanan) {
+        let updatedLayanan : Layanan = {
+          existingLayanan with status = newStatus;
+        };
+        layananMap.add(id, updatedLayanan);
+        updatedLayanan;
+      };
+    };
+  };
+
+  // getMyLayanan: authenticated query, filters by clientId == caller
+  public query ({ caller }) func getMyLayanan() : async [Layanan] {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can fetch their layanan");
+    };
+    let callerLayanan = layananMap.toArray().filter(
+      func(kv : (Nat, Layanan)) : Bool { Principal.equal(kv.1.clientId, caller) }
+    );
+    callerLayanan.map(func(kv : (Nat, Layanan)) : Layanan { kv.1 });
   };
 };

@@ -10,6 +10,14 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Layanan {
+  'id' : bigint,
+  'status' : LayananStatus,
+  'clientId' : Principal,
+  'name' : string,
+}
+export type LayananStatus = { 'aktif' : null } |
+  { 'tidakAktif' : null };
 export interface RegisterUserResponse {
   'ok' : boolean,
   'message' : string,
@@ -23,6 +31,14 @@ export type Role = { 'client' : null } |
   { 'guest' : null } |
   { 'asistenmu' : null } |
   { 'partner' : null };
+export interface Task {
+  'id' : string,
+  'tipeLayanan' : string,
+  'createdAt' : bigint,
+  'deadline' : bigint,
+  'detailTask' : string,
+  'judulTask' : string,
+}
 export interface UserProfile {
   'status' : string,
   'nama' : string,
@@ -38,8 +54,12 @@ export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'claimAdmin' : ActorMethod<[], { 'ok' : boolean, 'message' : string }>,
+  'createLayanan' : ActorMethod<[string, Principal], Layanan>,
+  'createTask' : ActorMethod<[string, string, string, bigint], Task>,
+  'getAllLayanan' : ActorMethod<[], Array<Layanan>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getMyLayanan' : ActorMethod<[], Array<Layanan>>,
   'getUserByPrincipal' : ActorMethod<
     [string],
     [] | [
@@ -58,6 +78,7 @@ export interface _SERVICE {
     [UserProfile],
     { 'ok' : boolean, 'message' : string }
   >,
+  'updateLayananStatus' : ActorMethod<[bigint, LayananStatus], Layanan>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

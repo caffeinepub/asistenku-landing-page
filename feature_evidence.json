@@ -1,4 +1,83 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-on-the-dashboard-client-page-frontend-src-pages-dashboardclient-tsx-replace-all-mock-dummy-data-with-live-data-fetched-from-the-backend-canister-implement-the-following-using-react-query-and-the-actor-hook-fetch-layanan-list-via-getmylayanan-fetch-tasks-grouped-by-status-via-gettaskbystatus-for-each-status-review-revisi-on-progress-qa-asistenmu-selesai-display-a-collapsible-summary-card-showing-counts-per-task-status",
+      "featureTitle": "On the /dashboard/client page (frontend/src/pages/DashboardClient.tsx), replace all mock/dummy data with live data fetched from the backend canister. Implement the following using React Query and the actor hook: fetch layanan list via getMyLayanan, fetch tasks grouped by status via getTaskByStatus for each status (#review, #revisi, #on_progress, #qa_asistenmu, #selesai). Display a collapsible Summary Card showing counts per task status.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/DashboardClient.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-collapsible-buat-task-form-section-to-the-dashboard-client-page-the-form-must-include-a-dropdown-to-select-an-active-layanan-populated-from-getmylayanan-only-shown-if-more-than-one-active-layanan-exists-a-text-input-for-judul-task-a-textarea-for-detail-task-a-date-picker-for-deadline-and-a-submit-button-labeled-buat-permintaan-ke-asistenmu-the-form-must-only-be-enabled-shown-when-the-client-has-at-least-one-active-layanan-on-submit-call-the-shared-createtask-backend-function-with-all-required-fields",
+      "featureTitle": "Add a collapsible 'Buat Task' form section to the /dashboard/client page. The form must include: a dropdown to select an active layanan (populated from getMyLayanan, only shown if more than one active layanan exists), a text input for Judul Task, a textarea for Detail Task, a date picker for Deadline, and a submit button labeled 'Buat Permintaan ke Asistenmu'. The form must only be enabled/shown when the client has at least one active layanan. On submit, call the shared createTask backend function with all required fields.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/DashboardClient.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-on-the-dashboard-client-page-render-five-separate-collapsible-task-status-cards-under-a-daftar-task-kamu-section-1-meminta-review-review-2-task-on-revisi-revisi-3-task-on-progress-on-progress-4-task-qa-asistenmu-qa-asistenmu-5-task-selesai-selesai-each-card-lists-tasks-belonging-to-the-client-for-that-status-each-individual-task-entry-inside-a-card-should-also-be-collapsible-to-show-full-details",
+      "featureTitle": "On the /dashboard/client page, render five separate collapsible task status cards under a 'Daftar Task Kamu' section: (1) Meminta Review (#review), (2) Task on Revisi (#revisi), (3) Task on Progress (#on_progress), (4) Task QA Asistenmu (#qa_asistenmu), (5) Task Selesai (#selesai). Each card lists tasks belonging to the client for that status. Each individual task entry inside a card should also be collapsible to show full details.",
+      "files": [
+        "frontend/src/pages/DashboardClient.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-collapsible-history-card-at-the-bottom-of-the-dashboard-client-page-that-displays-recent-activity-for-the-client-such-as-task-creation-events-and-status-changes-derived-from-the-available-task-data",
+      "featureTitle": "Add a collapsible 'History' card at the bottom of the /dashboard/client page that displays recent activity for the client, such as task creation events and status changes, derived from the available task data.",
+      "files": [
+        "frontend/src/pages/DashboardClient.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

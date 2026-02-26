@@ -1,38 +1,121 @@
 {
   "kind": "build_request",
-  "title": "Remove admin-only registration restriction from backend",
-  "projectName": "Asistenku Portal",
+  "title": "Connect Backend to /dashboard/client with Collapsible Cards and Task Management",
+  "projectName": "Asistenku",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "In backend/main.mo, remove any access-control guard on the user registration functions (for internal, partner, and client) that restricts registration to admin-only callers. After this change, any authenticated Internet Identity principal must be able to call these registration functions without a role check blocking them.",
+      "id": "REQ-3",
+      "text": "Update the Task type in backend/main.mo to include all required fields: id (Text), tipeLayanan (Text), judulTask (Text), detailTask (Text), deadline (Int), createdAt (Int). Update the shared createTask function to validate that the selected layanan is active (status == #aktif) and owned by the caller (clientId == msg.caller). Ensure getMyLayanan returns only layanan belonging to the calling principal.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-8",
+          "msg-10"
         ],
         "quotes": [
-          "Hapus logika lama yang membatasi hanya admin yang bisa mendaftarkan user lakukan hanya perintah ini saja"
+          "Data yang di record ke backend adalah id task,tipe layanan,judul task,detail task,Deadline,createdAt",
+          "client hanya bisa membuat task apabila ada layanan aktif"
         ]
       },
       "acceptanceCriteria": [
-        "The registration functions (registerUser or equivalent for internal, partner, client) no longer contain a caller-role check that returns an error when the caller is not an admin.",
-        "A non-admin authenticated principal can call the registration function without receiving an authorization error.",
-        "Existing stable var storage and function signatures remain intact."
+        "Task record type contains fields: id, tipeLayanan, judulTask, detailTask, deadline, createdAt",
+        "createTask (shared) rejects if layanan does not exist or is not active",
+        "createTask (shared) rejects if layanan.clientId != msg.caller",
+        "getMyLayanan returns only layanan where clientId == msg.caller"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "On the /dashboard/client page (frontend/src/pages/DashboardClient.tsx), replace all mock/dummy data with live data fetched from the backend canister. Implement the following using React Query and the actor hook: fetch layanan list via getMyLayanan, fetch tasks grouped by status via getTaskByStatus for each status (#review, #revisi, #on_progress, #qa_asistenmu, #selesai). Display a collapsible Summary Card showing counts per task status.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6",
+          "msg-8"
+        ],
+        "quotes": [
+          "Daftar layanan milik client,daftar task terkait,status registrasi,buat task, summary card",
+          "Sambungkan backend ke Frontend /dashboard/client"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Summary Card is collapsible and shows counts for each task status",
+        "Daftar Layanan section fetches real data from getMyLayanan and is collapsible",
+        "All task status sections display real data from the backend",
+        "No mock or hardcoded data remains in the client dashboard"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add a collapsible 'Buat Task' form section to the /dashboard/client page. The form must include: a dropdown to select an active layanan (populated from getMyLayanan, only shown if more than one active layanan exists), a text input for Judul Task, a textarea for Detail Task, a date picker for Deadline, and a submit button labeled 'Buat Permintaan ke Asistenmu'. The form must only be enabled/shown when the client has at least one active layanan. On submit, call the shared createTask backend function with all required fields.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-8"
+        ],
+        "quotes": [
+          "form yang sudah ada di frontend adalah Pilih layanan (layanan aktif client dropdown jika lebih dari satu), Judul task,detail task, deadline (date), tombol buat permintaan ke asistenmu"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Form is collapsible",
+        "Layanan dropdown only appears when client has more than one active layanan",
+        "Form is disabled or hidden if client has no active layanan",
+        "Submitting calls createTask on the backend canister with id, tipeLayanan, judulTask, detailTask, deadline, createdAt",
+        "Success and error states are shown to the user after submission"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "On the /dashboard/client page, render five separate collapsible task status cards under a 'Daftar Task Kamu' section: (1) Meminta Review (#review), (2) Task on Revisi (#revisi), (3) Task on Progress (#on_progress), (4) Task QA Asistenmu (#qa_asistenmu), (5) Task Selesai (#selesai). Each card lists tasks belonging to the client for that status. Each individual task entry inside a card should also be collapsible to show full details.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "buatkan juga card task Meminta review kamu (#review),Task on Revisi (#revisi),Task on Progress (on_progress), Task QA Asistenmu ((#qa_asistenmu),Task Selesai (#selesai)",
+          "Buat cardnya collapsible semua"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Five collapsible status cards are rendered under 'Daftar Task Kamu'",
+        "Each card displays only tasks matching its status for the logged-in client",
+        "Individual task entries within each card are collapsible showing full task details",
+        "Cards reflect live data from the backend"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Add a collapsible 'History' card at the bottom of the /dashboard/client page that displays recent activity for the client, such as task creation events and status changes, derived from the available task data.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "card History di bawah untuk aktifitas user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "History card is collapsible and placed at the bottom of the dashboard",
+        "History card lists recent task-related activity for the client",
+        "History data is derived from real backend task data"
       ]
     }
   ],
   "constraints": [
-    "Only remove the admin-only guard on registration functions — do not modify any other logic, including approval functions or data structures.",
-    "Do not change approval/reject logic; only #admin and #adminUser should retain approve/reject access.",
-    "Do not modify any frontend files."
+    "Break backend changes into the smallest possible incremental update to avoid build failures",
+    "Do not modify files under frontend/src/hooks/ or frontend/src/components/ui/",
+    "Client must not be able to create or modify Layanan — only Tasks",
+    "All cards on /dashboard/client must be collapsible"
   ],
   "nonGoals": [
-    "Adding new registration form fields or changing data structures.",
-    "Implementing the full approval workflow changes (separate future step).",
-    "Any frontend changes.",
-    "Migration logic unless stable var schema is altered."
+    "Building or modifying the partner or internal admin dashboards",
+    "Adding real-time updates or WebSocket features",
+    "Changing the registration flow or approval logic",
+    "Adding email or notification features"
   ],
   "imageRequirements": {
     "required": [],
