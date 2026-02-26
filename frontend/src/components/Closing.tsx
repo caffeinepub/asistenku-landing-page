@@ -1,12 +1,10 @@
 export default function Closing() {
   return (
-    <section className="py-16 md:py-20">
-      <div className="container px-4 md:px-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xl font-medium text-navy md:text-2xl">
-            Kami menjaga setiap layanan agar tetap berjalan dengan kualitas terbaik.
-          </p>
-        </div>
+    <section className="bg-white py-16 md:py-20">
+      <div className="max-w-3xl mx-auto px-4 text-center">
+        <p className="text-2xl md:text-3xl font-semibold text-navy-900 leading-relaxed">
+          Karena pekerjaan yang baik dimulai dari dukungan yang tepat.
+        </p>
       </div>
     </section>
   );

@@ -10,11 +10,25 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Delegation {
+  'status' : string,
+  'assignedBy' : Principal,
+  'createdAt' : bigint,
+  'deadline' : bigint,
+  'unitLayananTerpakai' : bigint,
+  'partnerId' : Principal,
+  'updatedAt' : bigint,
+  'taskId' : string,
+  'delegationId' : bigint,
+  'jamEfektifPengerjaan' : bigint,
+}
 export interface Layanan {
   'id' : bigint,
   'status' : LayananStatus,
   'clientId' : Principal,
   'name' : string,
+  'unitBalance' : bigint,
+  'hargaPerUnit' : bigint,
 }
 export type LayananStatus = { 'aktif' : null } |
   { 'tidakAktif' : null };
@@ -31,13 +45,33 @@ export type Role = { 'client' : null } |
   { 'guest' : null } |
   { 'asistenmu' : null } |
   { 'partner' : null };
-export interface Task {
+export interface TaskRecord {
   'id' : string,
+  'status' : TaskStatus,
+  'clientId' : Principal,
   'tipeLayanan' : string,
+  'gdrive_client' : [] | [string],
   'createdAt' : bigint,
   'deadline' : bigint,
   'detailTask' : string,
+  'partnerId' : [] | [Principal],
+  'gdrive_internal' : [] | [string],
   'judulTask' : string,
+}
+export type TaskStatus = { 'cancelled' : null } |
+  { 'open' : null } |
+  { 'selesai' : null } |
+  { 'inProgress' : null } |
+  { 'memintaReview' : null };
+export interface UnitTopUp {
+  'clientId' : Principal,
+  'approvedBy' : Principal,
+  'totalCost' : bigint,
+  'pricePerUnit' : bigint,
+  'unitsAdded' : bigint,
+  'timestamp' : bigint,
+  'layananId' : bigint,
+  'topUpId' : bigint,
 }
 export interface UserProfile {
   'status' : string,
@@ -52,14 +86,50 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'activateLayanan' : ActorMethod<[bigint], Layanan>,
+  'approveUser' : ActorMethod<
+    [string, boolean],
+    { 'ok' : boolean, 'message' : string }
+  >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'assignTaskToPartner' : ActorMethod<
+    [string, Principal, bigint, Principal],
+    TaskRecord
+  >,
   'claimAdmin' : ActorMethod<[], { 'ok' : boolean, 'message' : string }>,
-  'createLayanan' : ActorMethod<[string, Principal], Layanan>,
-  'createTask' : ActorMethod<[string, string, string, bigint], Task>,
+  'completeTask' : ActorMethod<[string], TaskRecord>,
+  'createDelegation' : ActorMethod<
+    [string, Principal, bigint, bigint, bigint],
+    Delegation
+  >,
+  'createLayanan' : ActorMethod<[string, Principal, bigint], Layanan>,
+  'createTask' : ActorMethod<
+    [string, string, string, bigint, [] | [string], [] | [string]],
+    TaskRecord
+  >,
+  'getActiveAsistenmu' : ActorMethod<[], Array<UserProfile>>,
+  'getActiveClients' : ActorMethod<[], Array<UserProfile>>,
+  'getActiveInternalStaff' : ActorMethod<[], Array<UserProfile>>,
+  'getActiveLayanan' : ActorMethod<[bigint], Array<Layanan>>,
+  'getActivePartners' : ActorMethod<[], Array<UserProfile>>,
+  'getAllDelegations' : ActorMethod<[], Array<Delegation>>,
   'getAllLayanan' : ActorMethod<[], Array<Layanan>>,
+  'getAllTasks' : ActorMethod<[], Array<TaskRecord>>,
+  'getAllTopUps' : ActorMethod<[], Array<UnitTopUp>>,
+  'getAllUsers' : ActorMethod<[], Array<UserProfile>>,
+  'getAsistenmuCount' : ActorMethod<[], bigint>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getClientCount' : ActorMethod<[], bigint>,
+  'getClientTopUps' : ActorMethod<[Principal], Array<UnitTopUp>>,
+  'getInternalStaffCount' : ActorMethod<[], bigint>,
+  'getMyDelegationsAsPartner' : ActorMethod<[], Array<Delegation>>,
   'getMyLayanan' : ActorMethod<[], Array<Layanan>>,
+  'getMyTasksAsClient' : ActorMethod<[], Array<TaskRecord>>,
+  'getMyTasksAsPartner' : ActorMethod<[], Array<TaskRecord>>,
+  'getPaginatedLayanan' : ActorMethod<[bigint], Array<Layanan>>,
+  'getPartnerActiveEffectiveHours' : ActorMethod<[Principal], bigint>,
+  'getPartnerCount' : ActorMethod<[], bigint>,
   'getUserByPrincipal' : ActorMethod<
     [string],
     [] | [
@@ -70,15 +140,30 @@ export interface _SERVICE {
   'getUserRole' : ActorMethod<[], [] | [Role]>,
   'isAdminClaimed' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'partnerRequestsReview' : ActorMethod<[string], TaskRecord>,
+  'redelegateTask' : ActorMethod<[bigint, Principal], TaskRecord>,
   'registerUser' : ActorMethod<
-    [string, string, string, string, Role, [] | [string], [] | [string]],
+    [
+      string,
+      string,
+      string,
+      string,
+      Role,
+      [] | [string],
+      [] | [string],
+      bigint,
+    ],
     RegisterUserResponse
   >,
   'saveCallerUserProfile' : ActorMethod<
     [UserProfile],
     { 'ok' : boolean, 'message' : string }
   >,
-  'updateLayananStatus' : ActorMethod<[bigint, LayananStatus], Layanan>,
+  'searchPartners' : ActorMethod<[string], Array<UserProfile>>,
+  'topUpUnits' : ActorMethod<
+    [Principal, bigint, bigint, bigint],
+    { 'ok' : boolean, 'message' : string }
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

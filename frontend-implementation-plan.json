@@ -1,83 +1,196 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Connect Backend to /dashboard/client with Collapsible Cards and Task Management",
+  "title": "Revert Frontend to Version 58",
   "requirements": [
     {
-      "id": "REQ-4",
-      "summary": "Replace all mock data in /dashboard/client with live backend data, implement React Query hooks for layanan and tasks, and add a collapsible Summary Card showing task status counts",
+      "id": "REQ-1",
+      "summary": "Restore the frontend application to the state of Version 58, undoing all changes introduced in Version 59",
       "acceptanceCriteria": [
-        "Summary Card is collapsible and shows counts for each task status",
-        "Daftar Layanan section fetches real data from getMyLayanan and is collapsible",
-        "All task status sections display real data from the backend",
-        "No mock or hardcoded data remains in the client dashboard"
+        "The deployed application matches the functionality and code of Version 58.",
+        "All changes introduced in Version 59 are fully removed.",
+        "The frontend UI and behavior reflect Version 58."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add React Query hooks for fetching client layanan and tasks: useGetMyLayanan (calls getMyLayanan backend method to fetch layanan belonging to the authenticated client), useGetTasksByStatus (calls getTaskByStatus backend method for each status: #review, #revisi, #on_progress, #qa_asistenmu, #selesai). Each hook must use the useActor hook to access the authenticated backend actor and handle loading/error states properly."
+          "description": "Restore the router configuration and route definitions to match Version 58 exactly, reverting any routing changes introduced in Version 59"
+        },
+        {
+          "path": "frontend/src/pages/Home.tsx",
+          "operation": "modify",
+          "description": "Restore the landing page component composition and structure to Version 58, reverting any layout or content changes from Version 59"
+        },
+        {
+          "path": "frontend/src/pages/ClientLogin.tsx",
+          "operation": "modify",
+          "description": "Restore the client login authentication flow and redirect logic to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/pages/ClientRegister.tsx",
+          "operation": "modify",
+          "description": "Restore the client registration form and validation logic to Version 58 state"
         },
         {
           "path": "frontend/src/pages/DashboardClient.tsx",
           "operation": "modify",
-          "description": "Remove all mock/dummy data from the component. Replace with live data fetched via the new React Query hooks (useGetMyLayanan, useGetTasksByStatus). Add a collapsible Summary Card section at the top showing task counts per status (#review, #revisi, #on_progress, #qa_asistenmu, #selesai) using shadcn/ui Collapsible component. Update the Daftar Layanan section to display real layanan data and make it collapsible. Ensure proper loading states and error handling for all backend queries. Verify the authorization component's usage instructions before implementing authentication checks."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Add a collapsible 'Buat Task' form to /dashboard/client that allows clients to create tasks only when they have at least one active layanan, with validation and backend submission via createTask",
-      "acceptanceCriteria": [
-        "Form is collapsible",
-        "Layanan dropdown only appears when client has more than one active layanan",
-        "Form is disabled or hidden if client has no active layanan",
-        "Submitting calls createTask on the backend canister with id, tipeLayanan, judulTask, detailTask, deadline, createdAt",
-        "Success and error states are shown to the user after submission"
-      ],
-      "file_operations": [
+          "description": "Restore the client dashboard UI, task creation form, and task list rendering to Version 58 functionality"
+        },
+        {
+          "path": "frontend/src/pages/DashboardPartner.tsx",
+          "operation": "modify",
+          "description": "Restore the partner dashboard task grouping and review request functionality to Version 58 state"
+        },
+        {
+          "path": "frontend/src/pages/InternalPortal.tsx",
+          "operation": "modify",
+          "description": "Restore the internal staff portal authentication, admin claim, and user registration features to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/pages/PartnerPortal.tsx",
+          "operation": "modify",
+          "description": "Restore the partner registration portal form and role verification to Version 58 state"
+        },
+        {
+          "path": "frontend/src/pages/TentangPartner.tsx",
+          "operation": "modify",
+          "description": "Restore the partner information page content and layout to Version 58"
+        },
+        {
+          "path": "frontend/src/pages/dashboard/AdminUser.tsx",
+          "operation": "modify",
+          "description": "Restore the admin user management dashboard to Version 58 state, reverting any changes to user list rendering or grouping logic"
+        },
+        {
+          "path": "frontend/src/pages/dashboard/Asistenmu.tsx",
+          "operation": "modify",
+          "description": "Restore the asistenmu task management dashboard and delegation form integration to Version 58 functionality"
+        },
+        {
+          "path": "frontend/src/pages/dashboard/finance.tsx",
+          "operation": "modify",
+          "description": "Restore the finance dashboard layanan pagination, creation forms, and top-up management to Version 58 state"
+        },
+        {
+          "path": "frontend/src/pages/dashboard/internal.tsx",
+          "operation": "modify",
+          "description": "Restore the internal dashboard composition and section layout to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Restore the header navigation links and mobile menu to Version 58 state"
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Restore the footer links and layout to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/components/Hero.tsx",
+          "operation": "modify",
+          "description": "Restore the hero section content, CTA buttons, and image to Version 58 state"
+        },
+        {
+          "path": "frontend/src/components/ServiceCards.tsx",
+          "operation": "modify",
+          "description": "Restore the service tier cards content, pricing, and accordion behavior to Version 58"
+        },
+        {
+          "path": "frontend/src/components/TaskCard.tsx",
+          "operation": "modify",
+          "description": "Restore the task card component structure, status badges, and action buttons to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/components/DelegationForm.tsx",
+          "operation": "modify",
+          "description": "Restore the delegation form fields, partner search logic, and submission handling to Version 58 state"
+        },
+        {
+          "path": "frontend/src/components/HowWeSupport.tsx",
+          "operation": "modify",
+          "description": "Restore the support process section content to Version 58"
+        },
+        {
+          "path": "frontend/src/components/TimelyDelivery.tsx",
+          "operation": "modify",
+          "description": "Restore the timely delivery marketing section content to Version 58"
+        },
+        {
+          "path": "frontend/src/components/ConversionStatement.tsx",
+          "operation": "modify",
+          "description": "Restore the conversion statement section content to Version 58"
+        },
+        {
+          "path": "frontend/src/components/JoinTeam.tsx",
+          "operation": "modify",
+          "description": "Restore the join team CTA section to Version 58 state"
+        },
+        {
+          "path": "frontend/src/components/Closing.tsx",
+          "operation": "modify",
+          "description": "Restore the closing section content to Version 58"
+        },
+        {
+          "path": "frontend/src/components/layout/DashboardShell.tsx",
+          "operation": "modify",
+          "description": "Restore the dashboard layout wrapper to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/layouts/AppLayout.tsx",
+          "operation": "modify",
+          "description": "Restore the authenticated app layout to Version 58 state"
+        },
+        {
+          "path": "frontend/src/layouts/PublicLayout.tsx",
+          "operation": "modify",
+          "description": "Restore the public layout wrapper to Version 58 implementation"
+        },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add a React Query mutation hook useCreateTask that calls the backend createTask method with parameters: tipeLayanan (Text), judulTask (Text), detailTask (Text), deadline (bigint). The mutation must use the authenticated actor from useActor and handle success/error responses. On success, invalidate relevant query keys (myLayanan, tasksByStatus) to refresh the dashboard data."
+          "description": "Restore all TanStack Query hooks, mutations, and query keys to Version 58 implementation, reverting any API call changes"
         },
         {
-          "path": "frontend/src/pages/DashboardClient.tsx",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Add a collapsible 'Buat Task' form section using shadcn/ui Collapsible, Card, Form, Input, Textarea, and Button components. The form should include: a dropdown (Select component) to choose an active layanan (only shown when more than one active layanan exists), a text input for Judul Task, a textarea for Detail Task, a date picker (Calendar/Popover components) for Deadline, and a submit button labeled 'Buat Permintaan ke Asistenmu'. Only enable/show the form when the client has at least one active layanan (derived from useGetMyLayanan). On submit, call the useCreateTask mutation with all required fields, converting the deadline date to a bigint timestamp. Display success/error feedback using toast notifications or inline messages. Verify the authorization component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Render five separate collapsible task status cards under 'Daftar Task Kamu' section, each listing tasks for that status with individual collapsible task entries showing full details",
-      "acceptanceCriteria": [
-        "Five collapsible status cards are rendered under 'Daftar Task Kamu'",
-        "Each card displays only tasks matching its status for the logged-in client",
-        "Individual task entries within each card are collapsible showing full task details",
-        "Cards reflect live data from the backend"
-      ],
-      "file_operations": [
+          "description": "Restore the actor initialization and authentication logic to Version 58 state"
+        },
         {
-          "path": "frontend/src/pages/DashboardClient.tsx",
+          "path": "frontend/src/hooks/useInternetIdentity.ts",
           "operation": "modify",
-          "description": "Add a 'Daftar Task Kamu' section containing five collapsible status cards using shadcn/ui Collapsible and Card components: (1) Meminta Review (#review), (2) Task on Revisi (#revisi), (3) Task on Progress (#on_progress), (4) Task QA Asistenmu (#qa_asistenmu), (5) Task Selesai (#selesai). Each card fetches tasks for its status using the useGetTasksByStatus hook. Within each status card, render individual task entries as nested collapsible items showing: task ID, tipeLayanan, judulTask (summary), and when expanded: detailTask, deadline (formatted date), createdAt (formatted date). Use the Task type from backend.d.ts. Handle empty states (e.g., show 'Tidak ada task' message or use the generated task-empty-state.dim_200x200.png image from frontend/public/assets/generated/task-empty-state.dim_200x200.png when a status has no tasks). Ensure proper loading/error states for each card."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Add a collapsible 'History' card at the bottom of /dashboard/client displaying recent task-related activity for the client",
-      "acceptanceCriteria": [
-        "History card is collapsible and placed at the bottom of the dashboard",
-        "History card lists recent task-related activity for the client",
-        "History data is derived from real backend task data"
-      ],
-      "file_operations": [
+          "description": "Restore the Internet Identity authentication context and hook to Version 58 implementation"
+        },
         {
-          "path": "frontend/src/pages/DashboardClient.tsx",
+          "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Add a collapsible 'History' card at the bottom of the dashboard using shadcn/ui Collapsible and Card components. Derive recent activity from the task data already fetched (across all statuses) by mapping tasks to activity entries such as 'Task <judulTask> created on <createdAt>' or 'Task <judulTask> updated to <status>'. Sort entries by timestamp (most recent first) and display the top 10-20 recent items. Each entry should show the activity description and a formatted timestamp. Include an empty state if no activity is available. This card must be placed below all other dashboard sections."
+          "description": "Restore the global CSS custom properties, Tailwind directives, and color tokens to Version 58 state"
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Restore the Tailwind configuration including theme extensions, colors, and plugins to Version 58"
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Restore the application entry point and provider wrapping to Version 58 state"
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Restore the HTML shell to Version 58 if any changes were made in Version 59"
+        },
+        {
+          "path": "frontend/src/utils/smoothScroll.ts",
+          "operation": "modify",
+          "description": "Restore the smooth scroll utility function to Version 58 implementation"
+        },
+        {
+          "path": "frontend/src/utils/urlParams.ts",
+          "operation": "modify",
+          "description": "Restore the URL parameter utility functions to Version 58 state"
         }
       ]
     }

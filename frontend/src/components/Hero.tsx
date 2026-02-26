@@ -1,64 +1,48 @@
-import { Button } from './ui/button';
 import { smoothScrollTo } from '../utils/smoothScroll';
 
 export default function Hero() {
-  const handlePilihLayanan = () => {
-    smoothScrollTo('service-cards');
-  };
-
   return (
-    <section className="container px-4 py-12 md:px-6 md:py-20 lg:py-24">
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        {/* Left Column */}
-        <div className="flex flex-col justify-center space-y-6">
-          <h1 className="font-bold tracking-tight text-navy">
-            <span className="block text-4xl sm:text-5xl lg:text-6xl">
-              Kerja tetap berjalan.
-            </span>
-            <span className="block text-4xl sm:text-5xl lg:text-6xl">
-              Hidup tetap tenang.
-            </span>
+    <section className="bg-white py-16 md:py-24">
+      <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+        {/* Text */}
+        <div className="flex flex-col gap-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-navy-900 leading-tight">
+            <span className="block">Kerja tetap berjalan.</span>
+            <span className="block text-teal-600">Hidup tetap tenang.</span>
           </h1>
-          
-          <div className="space-y-4 text-lg text-muted-foreground">
-            <p>
-              Asistenku adalah sistem pendampingan dalam pengaturan delegasi tugas.
-            </p>
-            <p>
-              Kami menjaga setiap layanan agar tetap berjalan dengan kualitas terbaik.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              onClick={handlePilihLayanan}
-              className="bg-teal text-white hover:bg-teal/90"
+          <p className="text-gray-600 text-lg leading-relaxed">
+            Asistenku hadir sebagai mitra kerja profesional yang membantu Anda menyelesaikan
+            pekerjaan administratif, riset, dan tugas harian — sehingga Anda bisa fokus pada
+            hal yang benar-benar penting.
+          </p>
+          <p className="text-gray-500 text-base leading-relaxed">
+            Dengan sistem berbasis unit layanan, Anda hanya membayar untuk pekerjaan yang
+            benar-benar selesai.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => smoothScrollTo('layanan')}
+              className="bg-teal-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-teal-700 transition-colors"
             >
               Pilih Layanan
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
+            </button>
+            <a
+              href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20ngobrol%20dulu%20tentang%20layanan%20Asistenku"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border border-teal-600 text-teal-600 px-6 py-3 rounded-full font-semibold hover:bg-teal-50 transition-colors"
             >
-              <a
-                href="https://wa.me/628817743613"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Ngobrol dulu
-              </a>
-            </Button>
+              Ngobrol dulu
+            </a>
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="flex items-center justify-center">
+        {/* Image */}
+        <div className="flex justify-center">
           <img
             src="/assets/heroimagenew.png"
             alt="Asistenku Hero"
-            className="w-full max-w-lg rounded-2xl shadow-lg"
+            className="w-full max-w-md rounded-2xl object-cover"
           />
         </div>
       </div>

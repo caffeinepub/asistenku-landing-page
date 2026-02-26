@@ -1,68 +1,56 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T12:09:33.967Z",
-  "summary": "The diff implements most of the required changes for connecting the backend to /dashboard/client with collapsible cards and task management. REQ-3 backend changes appear partially present (migration.mo and main.mo modifications), and frontend changes in DashboardClient.tsx and useQueries.ts address REQ-4 through REQ-7. However, due to truncation, several acceptance criteria cannot be fully confirmed, and some appear missing or incomplete.",
+  "generatedAt": "2026-02-26T22:00:17.776Z",
+  "summary": "The diff shows changes to both backend and frontend files. The backend has a new migration.mo file added and main.mo modified. The frontend has multiple files modified. A new migration.mo file and migration decorator appear in the backend, which may not have existed in Version 58, potentially violating the exact-revert requirement.",
   "missing_requirements": [
     {
-      "id": "REQ-3",
-      "requirement": "createTask (shared) rejects if layanan does not exist or is not active; createTask (shared) rejects if layanan.clientId != msg.caller",
-      "reason": "backend/main.mo is truncated and the createTask implementation validating layanan existence, active status, and caller ownership cannot be confirmed in the diff",
+      "requirement": "All changes introduced in Version 59 are fully removed and the application exactly matches Version 58 state with no new additions.",
+      "reason": "The diff adds a brand-new file 'backend/migration.mo' and introduces 'import Migration \"migration\"' plus the '(with migration = Migration.run)' actor decorator in main.mo. These constructs appear to be newly introduced upgrade infrastructure not present in Version 58, violating the constraint of exact restoration without introducing new changes.",
       "evidence": [
+        "backend/migration.mo",
         "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "getMyLayanan returns only layanan where clientId == msg.caller",
-      "reason": "backend/main.mo is truncated; the getMyLayanan function body filtering by clientId == msg.caller is not visible in the provided diff",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "fetch tasks grouped by status via getTaskByStatus for each status (#review, #revisi, #on_progress, #qa_asistenmu, #selesai) and display in dashboard",
-      "reason": "DashboardClient.tsx is truncated. The useQueries.ts file summary mentions useGetMyLayanan and useCreateTask but does not mention a useGetTaskByStatus hook. No hook for getTaskByStatus is visible in the truncated useQueries.ts content.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/DashboardClient.tsx"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Each card displays only tasks matching its status for the logged-in client; Cards reflect live data from the backend",
-      "reason": "DashboardClient.tsx is truncated and the five task status card implementations cannot be verified. No getTaskByStatus hook is visible in useQueries.ts, making live data for task status cards unconfirmable.",
-      "evidence": [
-        "frontend/src/pages/DashboardClient.tsx",
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "requirement": "History card is collapsible and placed at the bottom of the dashboard; History card lists recent task-related activity derived from real backend task data",
-      "reason": "DashboardClient.tsx is truncated and the History card implementation cannot be confirmed from the visible portion of the diff",
-      "evidence": [
-        "frontend/src/pages/DashboardClient.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "A migration module (backend/migration.mo) was added that converts old Task/Actor shape to new shape during canister upgrades",
-      "reason": "The build request did not mention adding a migration module. The requirement only asked to update the Task type and createTask function in main.mo, not to introduce a migration.mo file with data migration logic.",
+      "description": "Addition of a migration module (migration.mo) with a Migration.run function and actor migration decorator in main.mo",
+      "reason": "The build request explicitly states 'Do not introduce any new features or changes beyond what is needed to restore Version 58' and 'Preserve the Version 58 state exactly as it was.' A new migration.mo file and the '(with migration = Migration.run)' actor decorator are additions not present in Version 58, introduced to handle stable memory migration during the upgrade.",
       "evidence": [
-        "backend/migration.mo"
+        "backend/migration.mo",
+        "backend/main.mo"
       ]
     }
   ],
-  "confidence": 0.52,
+  "confidence": 0.62,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/components/Closing.tsx",
+    "frontend/src/components/ConversionStatement.tsx",
+    "frontend/src/components/DelegationForm.tsx",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/Hero.tsx",
+    "frontend/src/components/HowWeSupport.tsx",
+    "frontend/src/components/JoinTeam.tsx",
+    "frontend/src/components/ServiceCards.tsx",
+    "frontend/src/components/TaskCard.tsx",
+    "frontend/src/components/TimelyDelivery.tsx",
+    "frontend/src/pages/ClientLogin.tsx",
+    "frontend/src/pages/ClientRegister.tsx",
     "frontend/src/pages/DashboardClient.tsx",
+    "frontend/src/pages/DashboardPartner.tsx",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/InternalPortal.tsx",
+    "frontend/src/pages/PartnerPortal.tsx",
+    "frontend/src/pages/TentangPartner.tsx",
+    "frontend/src/pages/dashboard/AdminUser.tsx",
+    "frontend/src/pages/dashboard/Asistenmu.tsx",
+    "frontend/src/pages/dashboard/internal.tsx",
     "project_state.json"
   ]
 }

@@ -8,11 +8,6 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const UserRole = IDL.Variant({
-  'admin' : IDL.Null,
-  'user' : IDL.Null,
-  'guest' : IDL.Null,
-});
 export const LayananStatus = IDL.Variant({
   'aktif' : IDL.Null,
   'tidakAktif' : IDL.Null,
@@ -22,14 +17,45 @@ export const Layanan = IDL.Record({
   'status' : LayananStatus,
   'clientId' : IDL.Principal,
   'name' : IDL.Text,
+  'unitBalance' : IDL.Nat,
+  'hargaPerUnit' : IDL.Nat,
 });
-export const Task = IDL.Record({
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const TaskStatus = IDL.Variant({
+  'cancelled' : IDL.Null,
+  'open' : IDL.Null,
+  'selesai' : IDL.Null,
+  'inProgress' : IDL.Null,
+  'memintaReview' : IDL.Null,
+});
+export const TaskRecord = IDL.Record({
   'id' : IDL.Text,
+  'status' : TaskStatus,
+  'clientId' : IDL.Principal,
   'tipeLayanan' : IDL.Text,
+  'gdrive_client' : IDL.Opt(IDL.Text),
   'createdAt' : IDL.Int,
   'deadline' : IDL.Int,
   'detailTask' : IDL.Text,
+  'partnerId' : IDL.Opt(IDL.Principal),
+  'gdrive_internal' : IDL.Opt(IDL.Text),
   'judulTask' : IDL.Text,
+});
+export const Delegation = IDL.Record({
+  'status' : IDL.Text,
+  'assignedBy' : IDL.Principal,
+  'createdAt' : IDL.Int,
+  'deadline' : IDL.Int,
+  'unitLayananTerpakai' : IDL.Nat,
+  'partnerId' : IDL.Principal,
+  'updatedAt' : IDL.Int,
+  'taskId' : IDL.Text,
+  'delegationId' : IDL.Nat,
+  'jamEfektifPengerjaan' : IDL.Nat,
 });
 export const UserProfile = IDL.Record({
   'status' : IDL.Text,
@@ -38,6 +64,16 @@ export const UserProfile = IDL.Record({
   'whatsapp' : IDL.Text,
   'email' : IDL.Text,
   'idUser' : IDL.Text,
+});
+export const UnitTopUp = IDL.Record({
+  'clientId' : IDL.Principal,
+  'approvedBy' : IDL.Principal,
+  'totalCost' : IDL.Nat,
+  'pricePerUnit' : IDL.Nat,
+  'unitsAdded' : IDL.Nat,
+  'timestamp' : IDL.Int,
+  'layananId' : IDL.Nat,
+  'topUpId' : IDL.Nat,
 });
 export const Role = IDL.Variant({
   'client' : IDL.Null,
@@ -57,18 +93,73 @@ export const RegisterUserResponse = IDL.Record({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'activateLayanan' : IDL.Func([IDL.Nat], [Layanan], []),
+  'approveUser' : IDL.Func(
+      [IDL.Text, IDL.Bool],
+      [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+      [],
+    ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'assignTaskToPartner' : IDL.Func(
+      [IDL.Text, IDL.Principal, IDL.Nat, IDL.Principal],
+      [TaskRecord],
+      [],
+    ),
   'claimAdmin' : IDL.Func(
       [],
       [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
       [],
     ),
-  'createLayanan' : IDL.Func([IDL.Text, IDL.Principal], [Layanan], []),
-  'createTask' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Int], [Task], []),
+  'completeTask' : IDL.Func([IDL.Text], [TaskRecord], []),
+  'createDelegation' : IDL.Func(
+      [IDL.Text, IDL.Principal, IDL.Int, IDL.Nat, IDL.Nat],
+      [Delegation],
+      [],
+    ),
+  'createLayanan' : IDL.Func([IDL.Text, IDL.Principal, IDL.Nat], [Layanan], []),
+  'createTask' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Int,
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+      ],
+      [TaskRecord],
+      [],
+    ),
+  'getActiveAsistenmu' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+  'getActiveClients' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+  'getActiveInternalStaff' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+  'getActiveLayanan' : IDL.Func([IDL.Nat], [IDL.Vec(Layanan)], ['query']),
+  'getActivePartners' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+  'getAllDelegations' : IDL.Func([], [IDL.Vec(Delegation)], ['query']),
   'getAllLayanan' : IDL.Func([], [IDL.Vec(Layanan)], ['query']),
+  'getAllTasks' : IDL.Func([], [IDL.Vec(TaskRecord)], ['query']),
+  'getAllTopUps' : IDL.Func([], [IDL.Vec(UnitTopUp)], ['query']),
+  'getAllUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+  'getAsistenmuCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getClientCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'getClientTopUps' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(UnitTopUp)],
+      ['query'],
+    ),
+  'getInternalStaffCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'getMyDelegationsAsPartner' : IDL.Func([], [IDL.Vec(Delegation)], ['query']),
   'getMyLayanan' : IDL.Func([], [IDL.Vec(Layanan)], ['query']),
+  'getMyTasksAsClient' : IDL.Func([], [IDL.Vec(TaskRecord)], ['query']),
+  'getMyTasksAsPartner' : IDL.Func([], [IDL.Vec(TaskRecord)], ['query']),
+  'getPaginatedLayanan' : IDL.Func([IDL.Nat], [IDL.Vec(Layanan)], ['query']),
+  'getPartnerActiveEffectiveHours' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Nat],
+      ['query'],
+    ),
+  'getPartnerCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getUserByPrincipal' : IDL.Func(
       [IDL.Text],
       [
@@ -91,6 +182,8 @@ export const idlService = IDL.Service({
   'getUserRole' : IDL.Func([], [IDL.Opt(Role)], ['query']),
   'isAdminClaimed' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'partnerRequestsReview' : IDL.Func([IDL.Text], [TaskRecord], []),
+  'redelegateTask' : IDL.Func([IDL.Nat, IDL.Principal], [TaskRecord], []),
   'registerUser' : IDL.Func(
       [
         IDL.Text,
@@ -100,6 +193,7 @@ export const idlService = IDL.Service({
         Role,
         IDL.Opt(IDL.Text),
         IDL.Opt(IDL.Text),
+        IDL.Nat,
       ],
       [RegisterUserResponse],
       [],
@@ -109,17 +203,17 @@ export const idlService = IDL.Service({
       [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
       [],
     ),
-  'updateLayananStatus' : IDL.Func([IDL.Nat, LayananStatus], [Layanan], []),
+  'searchPartners' : IDL.Func([IDL.Text], [IDL.Vec(UserProfile)], ['query']),
+  'topUpUnits' : IDL.Func(
+      [IDL.Principal, IDL.Nat, IDL.Nat, IDL.Nat],
+      [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const UserRole = IDL.Variant({
-    'admin' : IDL.Null,
-    'user' : IDL.Null,
-    'guest' : IDL.Null,
-  });
   const LayananStatus = IDL.Variant({
     'aktif' : IDL.Null,
     'tidakAktif' : IDL.Null,
@@ -129,14 +223,45 @@ export const idlFactory = ({ IDL }) => {
     'status' : LayananStatus,
     'clientId' : IDL.Principal,
     'name' : IDL.Text,
+    'unitBalance' : IDL.Nat,
+    'hargaPerUnit' : IDL.Nat,
   });
-  const Task = IDL.Record({
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const TaskStatus = IDL.Variant({
+    'cancelled' : IDL.Null,
+    'open' : IDL.Null,
+    'selesai' : IDL.Null,
+    'inProgress' : IDL.Null,
+    'memintaReview' : IDL.Null,
+  });
+  const TaskRecord = IDL.Record({
     'id' : IDL.Text,
+    'status' : TaskStatus,
+    'clientId' : IDL.Principal,
     'tipeLayanan' : IDL.Text,
+    'gdrive_client' : IDL.Opt(IDL.Text),
     'createdAt' : IDL.Int,
     'deadline' : IDL.Int,
     'detailTask' : IDL.Text,
+    'partnerId' : IDL.Opt(IDL.Principal),
+    'gdrive_internal' : IDL.Opt(IDL.Text),
     'judulTask' : IDL.Text,
+  });
+  const Delegation = IDL.Record({
+    'status' : IDL.Text,
+    'assignedBy' : IDL.Principal,
+    'createdAt' : IDL.Int,
+    'deadline' : IDL.Int,
+    'unitLayananTerpakai' : IDL.Nat,
+    'partnerId' : IDL.Principal,
+    'updatedAt' : IDL.Int,
+    'taskId' : IDL.Text,
+    'delegationId' : IDL.Nat,
+    'jamEfektifPengerjaan' : IDL.Nat,
   });
   const UserProfile = IDL.Record({
     'status' : IDL.Text,
@@ -145,6 +270,16 @@ export const idlFactory = ({ IDL }) => {
     'whatsapp' : IDL.Text,
     'email' : IDL.Text,
     'idUser' : IDL.Text,
+  });
+  const UnitTopUp = IDL.Record({
+    'clientId' : IDL.Principal,
+    'approvedBy' : IDL.Principal,
+    'totalCost' : IDL.Nat,
+    'pricePerUnit' : IDL.Nat,
+    'unitsAdded' : IDL.Nat,
+    'timestamp' : IDL.Int,
+    'layananId' : IDL.Nat,
+    'topUpId' : IDL.Nat,
   });
   const Role = IDL.Variant({
     'client' : IDL.Null,
@@ -164,22 +299,81 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'activateLayanan' : IDL.Func([IDL.Nat], [Layanan], []),
+    'approveUser' : IDL.Func(
+        [IDL.Text, IDL.Bool],
+        [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+        [],
+      ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'assignTaskToPartner' : IDL.Func(
+        [IDL.Text, IDL.Principal, IDL.Nat, IDL.Principal],
+        [TaskRecord],
+        [],
+      ),
     'claimAdmin' : IDL.Func(
         [],
         [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
         [],
       ),
-    'createLayanan' : IDL.Func([IDL.Text, IDL.Principal], [Layanan], []),
-    'createTask' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Int],
-        [Task],
+    'completeTask' : IDL.Func([IDL.Text], [TaskRecord], []),
+    'createDelegation' : IDL.Func(
+        [IDL.Text, IDL.Principal, IDL.Int, IDL.Nat, IDL.Nat],
+        [Delegation],
         [],
       ),
+    'createLayanan' : IDL.Func(
+        [IDL.Text, IDL.Principal, IDL.Nat],
+        [Layanan],
+        [],
+      ),
+    'createTask' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Int,
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+        ],
+        [TaskRecord],
+        [],
+      ),
+    'getActiveAsistenmu' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'getActiveClients' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'getActiveInternalStaff' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'getActiveLayanan' : IDL.Func([IDL.Nat], [IDL.Vec(Layanan)], ['query']),
+    'getActivePartners' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'getAllDelegations' : IDL.Func([], [IDL.Vec(Delegation)], ['query']),
     'getAllLayanan' : IDL.Func([], [IDL.Vec(Layanan)], ['query']),
+    'getAllTasks' : IDL.Func([], [IDL.Vec(TaskRecord)], ['query']),
+    'getAllTopUps' : IDL.Func([], [IDL.Vec(UnitTopUp)], ['query']),
+    'getAllUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'getAsistenmuCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getClientCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'getClientTopUps' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(UnitTopUp)],
+        ['query'],
+      ),
+    'getInternalStaffCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'getMyDelegationsAsPartner' : IDL.Func(
+        [],
+        [IDL.Vec(Delegation)],
+        ['query'],
+      ),
     'getMyLayanan' : IDL.Func([], [IDL.Vec(Layanan)], ['query']),
+    'getMyTasksAsClient' : IDL.Func([], [IDL.Vec(TaskRecord)], ['query']),
+    'getMyTasksAsPartner' : IDL.Func([], [IDL.Vec(TaskRecord)], ['query']),
+    'getPaginatedLayanan' : IDL.Func([IDL.Nat], [IDL.Vec(Layanan)], ['query']),
+    'getPartnerActiveEffectiveHours' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Nat],
+        ['query'],
+      ),
+    'getPartnerCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getUserByPrincipal' : IDL.Func(
         [IDL.Text],
         [
@@ -202,6 +396,8 @@ export const idlFactory = ({ IDL }) => {
     'getUserRole' : IDL.Func([], [IDL.Opt(Role)], ['query']),
     'isAdminClaimed' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'partnerRequestsReview' : IDL.Func([IDL.Text], [TaskRecord], []),
+    'redelegateTask' : IDL.Func([IDL.Nat, IDL.Principal], [TaskRecord], []),
     'registerUser' : IDL.Func(
         [
           IDL.Text,
@@ -211,6 +407,7 @@ export const idlFactory = ({ IDL }) => {
           Role,
           IDL.Opt(IDL.Text),
           IDL.Opt(IDL.Text),
+          IDL.Nat,
         ],
         [RegisterUserResponse],
         [],
@@ -220,7 +417,12 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
         [],
       ),
-    'updateLayananStatus' : IDL.Func([IDL.Nat, LayananStatus], [Layanan], []),
+    'searchPartners' : IDL.Func([IDL.Text], [IDL.Vec(UserProfile)], ['query']),
+    'topUpUnits' : IDL.Func(
+        [IDL.Principal, IDL.Nat, IDL.Nat, IDL.Nat],
+        [IDL.Record({ 'ok' : IDL.Bool, 'message' : IDL.Text })],
+        [],
+      ),
   });
 };
 

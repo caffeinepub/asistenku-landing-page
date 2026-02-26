@@ -8,7 +8,7 @@ import Closing from '../components/Closing';
 
 export default function Home() {
   return (
-    <>
+    <main>
       <Hero />
       <HowWeSupport />
       <TimelyDelivery />
@@ -16,6 +16,6 @@ export default function Home() {
       <ServiceCards />
       <JoinTeam />
       <Closing />
-    </>
+    </main>
   );
 }

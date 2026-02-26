@@ -1,124 +1,22 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "ICP/Internet Identity app with admin claim, registration forms (internal, partner, client), and role-based approval dashboard. Task and Layanan management in main.mo with types, storage, upgrade hooks, and CRUD functions. Now connecting backend to /dashboard/client frontend with collapsible cards (summary, layanan list, create task form, task status cards, history). Task type being updated with fields: id, tipeLayanan, judulTask, detailTask, deadline, createdAt. Client can only create tasks if active layanan exists.",
-  "architectural_notes": [
-    "Backend is Motoko (main.mo) on ICP with Internet Identity authentication",
-    "Registration data stored in stable var with status: pending/approved/rejected",
-    "Three separate registration forms: internal, partner, client — each with distinct fields",
-    "Task and Layanan data stored in stable vars with HashMap, with preupgrade/postupgrade hooks for persistence",
-    "createLayanan restricted to adminFinance role; updateLayananStatus restricted to superadmin or adminFinance; createTask restricted to client owning the layanan",
-    "Task type extended with fields: tipeLayanan, judulTask, detailTask, deadline, createdAt"
-  ],
-  "known_issues": [
-    "Build repeatedly failing when attempting large changes to main.mo; needs to be broken into smaller incremental steps",
-    "Build failed when attempting large combined backend+frontend changes; needs incremental steps"
-  ],
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-on-the-dashboard-client-page-frontend-src-pages-dashboardclient-tsx-replace-all-mock-dummy-data-with-live-data-fetched-from-the-backend-canister-implement-the-following-using-react-query-and-the-actor-hook-fetch-layanan-list-via-getmylayanan-fetch-tasks-grouped-by-status-via-gettaskbystatus-for-each-status-review-revisi-on-progress-qa-asistenmu-selesai-display-a-collapsible-summary-card-showing-counts-per-task-status",
-      "title": "On the /dashboard/client page (frontend/src/pages/DashboardClient.tsx), replace all mock/dummy data with live data fetched from the backend canister. Implement the following using React Query and the actor hook: fetch layanan list via getMyLayanan, fetch tasks grouped by status via getTaskByStatus for each status (#review, #revisi, #on_progress, #qa_asistenmu, #selesai). Display a collapsible Summary Card showing counts per task status.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-collapsible-buat-task-form-section-to-the-dashboard-client-page-the-form-must-include-a-dropdown-to-select-an-active-layanan-populated-from-getmylayanan-only-shown-if-more-than-one-active-layanan-exists-a-text-input-for-judul-task-a-textarea-for-detail-task-a-date-picker-for-deadline-and-a-submit-button-labeled-buat-permintaan-ke-asistenmu-the-form-must-only-be-enabled-shown-when-the-client-has-at-least-one-active-layanan-on-submit-call-the-shared-createtask-backend-function-with-all-required-fields",
-      "title": "Add a collapsible 'Buat Task' form section to the /dashboard/client page. The form must include: a dropdown to select an active layanan (populated from getMyLayanan, only shown if more than one active layanan exists), a text input for Judul Task, a textarea for Detail Task, a date picker for Deadline, and a submit button labeled 'Buat Permintaan ke Asistenmu'. The form must only be enabled/shown when the client has at least one active layanan. On submit, call the shared createTask backend function with all required fields.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-on-the-dashboard-client-page-render-five-separate-collapsible-task-status-cards-under-a-daftar-task-kamu-section-1-meminta-review-review-2-task-on-revisi-revisi-3-task-on-progress-on-progress-4-task-qa-asistenmu-qa-asistenmu-5-task-selesai-selesai-each-card-lists-tasks-belonging-to-the-client-for-that-status-each-individual-task-entry-inside-a-card-should-also-be-collapsible-to-show-full-details",
-      "title": "On the /dashboard/client page, render five separate collapsible task status cards under a 'Daftar Task Kamu' section: (1) Meminta Review (#review), (2) Task on Revisi (#revisi), (3) Task on Progress (#on_progress), (4) Task QA Asistenmu (#qa_asistenmu), (5) Task Selesai (#selesai). Each card lists tasks belonging to the client for that status. Each individual task entry inside a card should also be collapsible to show full details.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-collapsible-history-card-at-the-bottom-of-the-dashboard-client-page-that-displays-recent-activity-for-the-client-such-as-task-creation-events-and-status-changes-derived-from-the-available-task-data",
-      "title": "Add a collapsible 'History' card at the bottom of the /dashboard/client page that displays recent activity for the client, such as task creation events and status changes, derived from the available task data.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    }
-  ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Remove admin-only registration restriction in main.mo so all II-authenticated users can submit registration forms (internal, partner, client)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Only #admin and #adminUser can approve/reject pending registrations; registration data stored in stable var with initial status pending",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "For internal registrations, admin determines role at approval time; for partner and client, role is set by user at form submission",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Users can only view their own registration status (pending/approved/rejected)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "In backend/main.mo, remove any access-control guard on the user registration functions (for internal, partner, and client) that restricts registration to admin-only callers. After this change, any authenticated Internet Identity principal must be able to call these registration functions without a role check blocking them.",
+      "id": "feature-restore-the-application-to-the-state-of-version-58-undoing-all-changes-introduced-in-version-59-across-both-backend-and-frontend",
+      "title": "Restore the application to the state of Version 58, undoing all changes introduced in Version 59 across both backend and frontend.",
       "reqIds": [
         "REQ-1"
       ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Add Task and Layanan management to main.mo: types (TaskStatus, LayananStatus, Task, Layanan), stable storage, upgrade hooks, and CRUD functions (createTask, updateTaskStatus, getAllTask, getTaskByStatus, createLayanan, updateLayananStatus, getAllLayanan, getMyLayanan) with role-based access control for adminFinance/superadmin",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Append the following code block verbatim to the very bottom of backend/main.mo, after the last closing `};` of the actor, without modifying any existing code above it. The appended code must include: (1) TaskStatus and LayananStatus variant types, (2) Task and Layanan record types (with clientId : Principal field in Layanan), (3) stable var declarations for taskCounter, layananCounter, tasksEntries, layananEntries, (4) HashMap vars for tasks and layanan, (5) preupgrade and postupgrade system hooks that persist and restore both HashMaps, (6) createTask (public, anonymous — validates layanan exists), (7) updateTaskStatus (public, anonymous — guards against updating a #selesai task), (8) getAllTask (public query), (9) getTaskByStatus (public query), (10) getAllLayanan (public query), (11) createLayanan (shared, requires adminFinance via requireAdminFinance), (12) updateLayananStatus (shared, requires superadmin or adminFinance via roles.get), (13) getMyLayanan (shared query, filters by clientId == msg.caller), (14) a second createTask overload (shared, validates layanan ownership by clientId == msg.caller and layanan status == #aktif).",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Update Task type in main.mo with fields: id, tipeLayanan, judulTask, detailTask, deadline, createdAt. Update createTask (shared) to validate layanan is active and owned by caller (clientId == msg.caller).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Connect backend to /dashboard/client frontend: collapsible Summary Card, Daftar Layanan (getMyLayanan), Buat Task form (dropdown aktif layanan, judul, detail, deadline, submit button), Daftar Task per status (review/revisi/on_progress/qa_asistenmu/selesai), History card. Client cannot create layanan, only tasks if active layanan exists.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Update the Task type in backend/main.mo to include all required fields: id (Text), tipeLayanan (Text), judulTask (Text), detailTask (Text), deadline (Int), createdAt (Int). Update the shared createTask function to validate that the selected layanan is active (status == #aktif) and owned by the caller (clientId == msg.caller). Ensure getMyLayanan returns only layanan belonging to the calling principal.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "status": "pending"
+      "version": 1
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "Asistenku Portal",
+  "new_feature_requests": [],
+  "projectName": "Revert to Version 58",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

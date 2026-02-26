@@ -1,94 +1,81 @@
-import { Link, useNavigate } from '@tanstack/react-router';
-import { Menu, X } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Button } from './ui/button';
+import { Menu, X } from 'lucide-react';
+import { smoothScrollTo } from '../utils/smoothScroll';
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleMasuk = () => {
-    navigate({ to: '/client-login' });
+  const handleLayananClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (window.location.pathname !== '/') {
+      navigate({ to: '/' }).then(() => {
+        setTimeout(() => smoothScrollTo('layanan'), 100);
+      });
+    } else {
+      smoothScrollTo('layanan');
+    }
+    setMenuOpen(false);
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-        {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <img
-            src="/assets/asistenku-horizontal.png"
-            alt="Asistenku"
-            className="h-8 w-auto md:h-10"
-          />
-        </Link>
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <button
+          onClick={() => navigate({ to: '/' })}
+          className="flex items-center gap-2 focus:outline-none"
+        >
+          <img src="/assets/asistenku-horizontal.png" alt="Asistenku" className="h-8" />
+        </button>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-6 md:flex">
-          <a
-            href="/#layanan"
-            className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-          >
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+          <button onClick={handleLayananClick} className="hover:text-teal-600 transition-colors">
             Layanan
-          </a>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/client-register">Daftar</Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleMasuk}
+          </button>
+          <button
+            onClick={() => navigate({ to: '/tentang-partner' })}
+            className="hover:text-teal-600 transition-colors"
           >
-            Masuk
-          </Button>
+            Jadi Partner
+          </button>
+          <button
+            onClick={() => navigate({ to: '/client-register' })}
+            className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors text-sm font-semibold"
+          >
+            Daftar
+          </button>
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Hamburger */}
         <button
-          className="md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden text-gray-600 focus:outline-none"
+          onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Navigation */}
-      {mobileMenuOpen && (
-        <div className="border-t border-border/40 bg-background md:hidden">
-          <nav className="container flex flex-col gap-4 px-4 py-4">
-            <a
-              href="/#layanan"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-            >
-              Layanan
-            </a>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="justify-start"
-              asChild
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Link to="/client-register">Daftar</Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="justify-start"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleMasuk();
-              }}
-            >
-              Masuk
-            </Button>
-          </nav>
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 flex flex-col gap-4 text-sm font-medium text-gray-600">
+          <button onClick={handleLayananClick} className="text-left hover:text-teal-600 transition-colors">
+            Layanan
+          </button>
+          <button
+            onClick={() => { navigate({ to: '/tentang-partner' }); setMenuOpen(false); }}
+            className="text-left hover:text-teal-600 transition-colors"
+          >
+            Jadi Partner
+          </button>
+          <button
+            onClick={() => { navigate({ to: '/client-register' }); setMenuOpen(false); }}
+            className="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors text-sm font-semibold text-center"
+          >
+            Daftar
+          </button>
         </div>
       )}
     </header>
